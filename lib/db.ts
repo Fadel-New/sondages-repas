@@ -7,6 +7,12 @@ let prisma: PrismaClient;
 
 // Fonction pour vérifier les permissions du fichier de base de données
 function checkDbPermissions() {
+  // Skip filesystem checks in production (Vercel has a read-only filesystem)
+  if (process.env.NODE_ENV === 'production') {
+    console.log('Skipping database permission check in production environment');
+    return;
+  }
+
   // Obtenir le chemin de la base de données de l'URL de connexion
   const dbUrl = process.env.DATABASE_URL || 'file:/tmp/sondages_repas.db';
   

@@ -6,7 +6,7 @@ import prisma from './db';
 import bcrypt from 'bcryptjs'; // Vous aurez besoin d'installer bcryptjs: npm install bcryptjs @types/bcryptjs
 
 const sessionOptions = {
-  password: process.env.JWT_SECRET as string, // Doit être une chaîne secrète de 32 caractères minimum
+  password: process.env.JWT_SECRET || 'this-is-a-default-secret-key-min-32-chars', // Doit être une chaîne secrète de 32 caractères minimum
   cookieName: 'myapp_session',
   cookieOptions: {
     secure: process.env.NODE_ENV === 'production', // Mettre à true en production (HTTPS)
