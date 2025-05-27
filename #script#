@@ -15,3 +15,4 @@ provider = "postgresql"' > /home/fadel/Workspaces/sondages-repas/prisma/migratio
 cd /home/fadel/Workspaces/sondages-repas && npm install --save pg
 cat scripts/switch-db-mode.sh
 chmod +x scripts/prepare-vercel-deploy.sh
+chmod +x scripts/vercel-build-auto.sh

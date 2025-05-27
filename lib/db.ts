@@ -3,9 +3,6 @@
 import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
 
-let prisma: PrismaClient;
-
-// Fonction pour vérifier les permissions du fichier de base de données
 function checkDbPermissions() {
   // In production, validate that we have a proper PostgreSQL URL
   if (process.env.NODE_ENV === 'production') {
@@ -58,34 +55,44 @@ function checkDbPermissions() {
 // Vérifier les permissions au démarrage
 checkDbPermissions();
 
-try {
-  if (process.env.NODE_ENV === 'production') {
-    // Ensure we have a proper DATABASE_URL before initializing Prisma
-    const dbUrl = process.env.DATABASE_URL;
-    if (!dbUrl) {
-      console.error('Missing DATABASE_URL - Prisma initialization will fail');
-    } else if (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://')) {
-      console.error(`Invalid DATABASE_URL format: ${dbUrl.substring(0, 10)}... - Must start with postgresql:// or postgres://`);
-    }
-    prisma = new PrismaClient();
-    console.log('PrismaClient initialized for production with PostgreSQL');
-  } else {
-    // Prevent multiple instances of Prisma Client in development
-    if (!global.prisma) {
-      global.prisma = new PrismaClient();
-    }
-    prisma = global.prisma;
+// Log the DATABASE_URL at the point of potential PrismaClient instantiation
+if (process.env.NODE_ENV === 'production') {
+  console.log('[lib/db.ts] Production mode: Attempting to initialize Prisma Client for PostgreSQL.');
+  console.log('[lib/db.ts] DATABASE_URL from env:', process.env.DATABASE_URL);
+} else {
+  console.log('[lib/db.ts] Development mode: Attempting to initialize Prisma Client for SQLite.');
+  console.log('[lib/db.ts] DATABASE_URL from env:', process.env.DATABASE_URL);
+}
+
+let prisma: PrismaClient;
+
+if (process.env.NODE_ENV === 'production') {
+  try {
+    console.log('[lib/db.ts] Initializing PrismaClient for production (PostgreSQL)...');
+    prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL, // Ensure Prisma uses the runtime env var
+        },
+      },
+    });
+    console.log('[lib/db.ts] PrismaClient for production initialized successfully.');
+  } catch (e: any) {
+    console.error('[lib/db.ts] Error initializing PrismaClient for production:', e);
+    console.error('[lib/db.ts] Failing DATABASE_URL was:', process.env.DATABASE_URL);
+    // It's crucial to see this error in Vercel logs
+    throw new Error(`Failed to initialize Prisma Client in production: ${e.message}. DATABASE_URL: ${process.env.DATABASE_URL}`);
   }
-} catch (error) {
-  console.error('Error initializing Prisma client:', error);
-  // Create a proxy object that throws helpful errors when accessed
-  prisma = new Proxy({} as PrismaClient, {
-    get: function(target, prop) {
-      return () => { 
-        throw new Error(`Database access failed. Please check DATABASE_URL environment variable. Original error: ${error}`);
-      };
-    }
-  });
+} else {
+  // Development or other environment: use SQLite
+  try {
+    console.log('[lib/db.ts] Initializing PrismaClient for development (SQLite)...');
+    prisma = new PrismaClient();
+    console.log('[lib/db.ts] PrismaClient for development initialized successfully.');
+  } catch (e: any) {
+    console.error('[lib/db.ts] Error initializing PrismaClient for development:', e);
+    throw new Error(`Failed to initialize Prisma Client in development: ${e.message}`);
+  }
 }
 
 export default prisma;
