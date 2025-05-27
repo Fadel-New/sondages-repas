@@ -1,17 +1,17 @@
-# Déploiement sur Vercel
+# Guide de déploiement sur Vercel
 
-Ce document explique comment déployer correctement l'application sur Vercel.
+Ce guide explique comment déployer correctement l'application sur Vercel avec PostgreSQL.
+
+## Prérequis
+
+1. Un compte [Vercel](https://vercel.com/)
+2. Une base de données PostgreSQL
+   - Option recommandée : [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres)
+   - Alternatives : [Supabase](https://supabase.com), [Neon](https://neon.tech), [Railway](https://railway.app)
 
 ## Préparation pour le déploiement en production
 
-Avant de déployer sur Vercel:
-
-1. Préparez votre schéma Prisma pour PostgreSQL:
-   ```bash
-   npm run use-postgres
-   ```
-   
-   Ce script vous demandera l'URL de votre base de données PostgreSQL et configurera automatiquement votre projet.
+Le schéma Prisma est désormais configuré automatiquement pour utiliser PostgreSQL en production. Vous n'avez pas besoin de faire de modifications manuelles.
 
 ## Variables d'environnement requises
 
@@ -30,34 +30,54 @@ Assurez-vous de configurer ces variables d'environnement dans les paramètres du
 
 ## Étapes de déploiement
 
-1. Créez une base de données PostgreSQL:
-   - Option 1: Via [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres)
-   - Option 2: Via un service comme [Supabase](https://supabase.com), [Neon](https://neon.tech) ou [Railway](https://railway.app)
+### 1. Préparation de la base de données PostgreSQL
 
-2. Préparez votre schéma pour PostgreSQL:
-   ```bash
-   npm run use-postgres
-   ```
+Créez une base de données PostgreSQL et notez l'URL de connexion au format :
+```
+postgresql://utilisateur:mot_de_passe@hôte:port/base_de_données
+```
 
-3. Connectez votre dépôt GitHub à Vercel
+### 2. Configuration du projet sur Vercel
 
-4. Configurez les variables d'environnement mentionnées ci-dessus dans les paramètres du projet Vercel
+1. Connectez votre dépôt GitHub à Vercel
+2. Dans les paramètres du projet, configurez les variables d'environnement suivantes :
+   - `DATABASE_URL` : L'URL de connexion à votre base de données PostgreSQL
+   - `JWT_SECRET` : Une chaîne aléatoire d'au moins 32 caractères
+   - `ADMIN_USERNAME` : Nom d'utilisateur admin (optionnel)
+   - `ADMIN_PASSWORD` : Mot de passe admin (optionnel)
 
-5. Déployez votre projet
+### 3. Déploiement
 
-6. Votre application devrait fonctionner immédiatement, car le script de build Vercel exécute automatiquement:
-   - La génération du client Prisma
-   - Les migrations de la base de données
-   - L'initialisation du compte administrateur
+Le processus de déploiement sur Vercel exécutera automatiquement :
+1. La génération du client Prisma
+2. Les migrations de base de données pour créer les tables
+3. La création d'un utilisateur admin par défaut
+4. La construction de l'application Next.js
 
-## Résolution des problèmes courants
+## Dépannage
 
-- **Erreur "Missing password"**: Vérifiez que `JWT_SECRET` est correctement configuré dans les variables d'environnement Vercel
-- **Erreurs de base de données**: Vérifiez que `DATABASE_URL` pointe vers une base de données PostgreSQL accessible
-- **Erreur "file system" ou "SQLITE_READONLY"**: Cela indique que vous essayez d'utiliser SQLite en production. Assurez-vous d'avoir:
-  1. Utilisé le script `npm run use-postgres` avant le déploiement
-  2. Configuré correctement l'URL de votre base de données PostgreSQL
-  3. Utilisé le schéma PostgreSQL dans votre déploiement
+### Problème : Erreur "Schema not found"
+
+**Solution** : Vérifiez que le chemin vers le fichier schema.prisma est correct. Le déploiement utilise `--schema=./prisma/schema.prisma`.
+
+### Problème : Erreur de connexion à la base de données
+
+**Solution** :
+- Vérifiez que l'URL de connexion est correcte
+- Assurez-vous que la base de données est accessible depuis Vercel
+- Vérifiez que l'utilisateur de la base de données a les permissions nécessaires
+
+### Problème : Erreur "Unknown file extension .ts"
+
+**Solution** : Ce problème a été résolu en convertissant les scripts TypeScript en JavaScript pour la compatibilité avec Vercel.
+
+### Problème : Erreur "Missing password" avec Iron Session
+
+**Solution** : Vérifiez que `JWT_SECRET` est correctement configuré dans les variables d'environnement Vercel.
+
+### Problème : Erreur "SQLITE_READONLY"
+
+**Solution** : Cette erreur indique que vous essayez d'utiliser SQLite en production. Notre configuration utilise maintenant automatiquement PostgreSQL en production.
 
 ## Comment tester localement la configuration de production
 

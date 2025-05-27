@@ -1,24 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Sondage sur les solutions de repas
 
-## Getting Started
+Ce projet est une plateforme de sondage qui permet aux utilisateurs de répondre à un questionnaire sur leurs habitudes alimentaires et leurs besoins en matière de repas. Les administrateurs peuvent consulter et analyser les réponses soumises.
 
-First, run the development server:
+## Technologies utilisées
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Frontend**: Next.js, React, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Base de données**: 
+  - Développement: SQLite via Prisma
+  - Production: PostgreSQL via Prisma
+- **Authentication**: Iron Session
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Fonctionnalités
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+- **Formulaire de sondage**: Interface utilisateur pour recueillir les réponses
+- **Panel d'administration**: Tableau de bord pour visualiser et analyser les réponses
+- **Export CSV**: Export des données pour analyse externe
+- **Authentification**: Protection des données administratives
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Installation
+
+### Prérequis
+
+- Node.js 20+
+- npm ou yarn
+
+### Configuration
+
+1. Clonez le dépôt :
+   ```bash
+   git clone https://github.com/votre-utilisateur/sondages-repas.git
+   cd sondages-repas
+   ```
+
+2. Installez les dépendances :
+   ```bash
+   npm install
+   ```
+
+3. Configurez les variables d'environnement :
+   ```bash
+   cp .env.production.example .env.local
+   # Modifiez les valeurs dans .env.local selon vos besoins
+   ```
+
+4. Initialisez la base de données SQLite (développement) :
+   ```bash
+   npm run init-sqlite
+   ```
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
 
@@ -33,8 +62,30 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Déploiement sur Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Ce projet est configuré pour fonctionner sur Vercel en utilisant PostgreSQL en production.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+### Prérequis pour le déploiement
+
+1. Un compte Vercel
+2. Une base de données PostgreSQL (via Vercel Postgres ou un service externe)
+
+### Instructions de déploiement
+
+1. Importez votre projet dans Vercel
+2. Configurez les variables d'environnement suivantes:
+   - `DATABASE_URL`: URL de connexion à votre base de données PostgreSQL
+   - `JWT_SECRET`: Chaîne secrète d'au moins 32 caractères
+   - `ADMIN_USERNAME`: (Optionnel) Nom d'utilisateur admin
+   - `ADMIN_PASSWORD`: (Optionnel) Mot de passe admin
+
+3. Déployez l'application
+
+Pour des instructions détaillées, consultez notre [Guide de déploiement Vercel](./VERCEL_DEPLOYMENT.md).
+
+### Informations importantes
+
+- Le système basculera automatiquement vers PostgreSQL en environnement de production
+- Pour tester la configuration PostgreSQL en local, utilisez `npm run use-postgres`
+- Pour revenir à SQLite en local, utilisez `npm run use-sqlite`

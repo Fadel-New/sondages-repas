@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
+import { PrismaClient } from '@prisma/client';
 
 // Extension de type pour inclure la propriété session
 declare module 'next' {
@@ -29,26 +30,53 @@ async function responseDetailHandler(req: NextApiRequest, res: NextApiResponse) 
 
   if (req.method === 'GET') {
     try {
-      // Chemin de la base de données - utiliser un chemin relatif plus fiable
-      const dbPath = path.join(process.cwd(), 'prisma.db');
+      let response;
+      
+      // Déterminer si nous sommes en production ou en développement
+      if (process.env.NODE_ENV === 'production') {
+        // En production, utiliser le client Prisma
+        const prisma = new PrismaClient();
+        
+        try {
+          response = await prisma.surveyResponse.findUnique({
+            where: {
+              id: parseInt(id, 10)
+            }
+          });
+          
+          await prisma.$disconnect();
+          
+          if (!response) {
+            return res.status(404).json({ message: 'Réponse introuvable' });
+          }
+          
+        } catch (prismaError) {
+          console.error("Erreur Prisma:", prismaError);
+          await prisma.$disconnect();
+          throw prismaError;
+        }
+      } else {
+        // En développement, utiliser SQLite direct
+        // Chemin de la base de données - utiliser un chemin relatif plus fiable
+        const dbPath = path.join(process.cwd(), 'prisma.db');
 
-      // Vérifier si la base de données existe
-      if (!fs.existsSync(dbPath)) {
-        console.log("La base de données n'existe pas:", dbPath);
-        return res.status(404).json({ message: 'Base de données introuvable' });
-      }
+        // Vérifier si la base de données existe
+        if (!fs.existsSync(dbPath)) {
+          console.log("La base de données n'existe pas:", dbPath);
+          return res.status(404).json({ message: 'Base de données introuvable' });
+        }
 
-      // Ouvrir la connexion à la base de données
-      const db = await open({
-        filename: dbPath,
-        driver: sqlite3.Database
-      });
+        // Ouvrir la connexion à la base de données
+        const db = await open({
+          filename: dbPath,
+          driver: sqlite3.Database
+        });
 
-      // Récupérer la réponse avec l'ID spécifié
-      const response = await db.get(`
-        SELECT * FROM SurveyResponse
-        WHERE id = ?
-      `, id);
+        // Récupérer la réponse avec l'ID spécifié
+        response = await db.get(`
+          SELECT * FROM SurveyResponse
+          WHERE id = ?
+        `, id);
 
       // Fermer la connexion
       await db.close();
@@ -56,10 +84,12 @@ async function responseDetailHandler(req: NextApiRequest, res: NextApiResponse) 
       if (!response) {
         return res.status(404).json({ message: 'Réponse introuvable' });
       }
+      }
 
-      // Convertir les chaînes en tableaux
+      // Convertir les chaînes en tableaux et formater les dates
       const formattedResponse = {
         ...response,
+        createdAt: process.env.NODE_ENV === 'production' ? response.createdAt.toISOString() : response.createdAt,
         typesRepas: response.typesRepas ? response.typesRepas.split(',') : [],
         defisAlimentation: response.defisAlimentation ? response.defisAlimentation.split(',') : [],
         aspectsImportants: response.aspectsImportants ? response.aspectsImportants.split(',') : []
