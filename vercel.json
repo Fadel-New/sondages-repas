@@ -1,15 +1,17 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "chmod +x scripts/vercel-build.sh && scripts/vercel-build.sh && npm run build",
   "installCommand": "npm install",
   "framework": "nextjs",
   "devCommand": "npm run dev",
   "outputDirectory": ".next",
   "env": {
-    "PRISMA_GENERATE_DATAPROXY": "true"
+    "PRISMA_GENERATE_DATAPROXY": "true",
+    "NODE_ENV": "production"
   },
   "build": {
     "env": {
-      "PRISMA_GENERATE_DATAPROXY": "true"
+      "PRISMA_GENERATE_DATAPROXY": "true",
+      "NODE_ENV": "production"
     }
   }
 }

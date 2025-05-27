@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
+import { PrismaClient } from '@prisma/client';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -32,20 +33,60 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ? surveyData.aspectsImportants.join(',') 
       : surveyData.aspectsImportants || '';
 
-    // Chemin de la base de données - utiliser un chemin relatif plus fiable
-    const dbPath = path.join(process.cwd(), 'prisma.db');
-    
-    // Vérifier si le dossier existe
-    const dbDir = path.dirname(dbPath);
-    if (!fs.existsSync(dbDir)) {
-      fs.mkdirSync(dbDir, { recursive: true });
-    }
-    
-    // Créer la base de données si elle n'existe pas
-    const db = await open({
-      filename: dbPath,
-      driver: sqlite3.Database
-    });
+    // Déterminer si nous sommes en production ou en développement
+    if (process.env.NODE_ENV === 'production') {
+      // En production, utiliser le client Prisma directement
+      const prisma = new PrismaClient();
+      
+      try {
+        const result = await prisma.surveyResponse.create({
+          data: {
+            ville: surveyData.ville,
+            villeAutre: surveyData.villeAutre || null,
+            situationProfessionnelle: surveyData.situationProfessionnelle,
+            situationProfAutre: surveyData.situationProfAutre || null,
+            mangeExterieurFreq: surveyData.mangeExterieurFreq,
+            tempsPreparationRepas: surveyData.tempsPreparationRepas,
+            typesRepas: typesRepasString,
+            typesRepasAutre: surveyData.typesRepasAutre || null,
+            defisAlimentation: defisAlimentationString,
+            defisAlimentationAutre: surveyData.defisAlimentationAutre || null,
+            satisfactionAccesRepas: parseInt(surveyData.satisfactionAccesRepas, 10),
+            interetSolutionRepas: surveyData.interetSolutionRepas,
+            aspectsImportants: aspectsImportantsString,
+            aspectsImportantsAutre: surveyData.aspectsImportantsAutre || null,
+            budgetJournalierRepas: surveyData.budgetJournalierRepas,
+            prixMaxRepas: surveyData.prixMaxRepas,
+            budgetMensuelAbo: surveyData.budgetMensuelAbo,
+            commentaires: surveyData.commentaires || null
+          }
+        });
+        
+        await prisma.$disconnect();
+        return res.status(201).json({ 
+          message: 'Réponse enregistrée avec succès!', 
+          responseId: result.id 
+        });
+      } catch (prismaError) {
+        console.error("Erreur Prisma:", prismaError);
+        await prisma.$disconnect();
+        throw prismaError;
+      }
+    } else {
+      // En développement, utiliser SQLite direct comme avant
+      const dbPath = path.join(process.cwd(), 'prisma.db');
+      
+      // Vérifier si le dossier existe
+      const dbDir = path.dirname(dbPath);
+      if (!fs.existsSync(dbDir)) {
+        fs.mkdirSync(dbDir, { recursive: true });
+      }
+      
+      // Créer la base de données si elle n'existe pas
+      const db = await open({
+        filename: dbPath,
+        driver: sqlite3.Database
+      });
 
     // Créer la table si elle n'existe pas
     await db.exec(`
@@ -112,6 +153,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       message: 'Réponse enregistrée avec succès!', 
       responseId: result.lastID 
     });
+    }
   } catch (error) {
     console.error('Erreur lors de la soumission du sondage:', error);
     if (error instanceof Error) {
