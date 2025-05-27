@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../lib/db'; // Import the shared instance
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -35,8 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Déterminer si nous sommes en production ou en développement
     if (process.env.NODE_ENV === 'production') {
-      // En production, utiliser le client Prisma directement
-      const prisma = new PrismaClient();
+      // En production, utiliser le client Prisma partagé depuis lib/db
       
       try {
         const result = await prisma.surveyResponse.create({
@@ -62,15 +61,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         });
         
-        await prisma.$disconnect();
+        // await prisma.$disconnect(); // Generally not needed for shared instance in serverless, Prisma handles connections.
+                                    // If you keep it, ensure it's in a finally block if errors can occur before it.
+                                    // For Vercel, it's often better to let Prisma manage the connection lifecycle per function invocation.
         return res.status(201).json({ 
           message: 'Réponse enregistrée avec succès!', 
           responseId: result.id 
         });
       } catch (prismaError) {
-        console.error("Erreur Prisma:", prismaError);
-        await prisma.$disconnect();
-        throw prismaError;
+        console.error("Erreur Prisma dans submit-survey-direct:", prismaError);
+        // await prisma.$disconnect(); // See comment above
+        // Rethrow or handle appropriately. The global error handler will catch it.
+        throw prismaError; 
       }
     } else {
       // En développement, utiliser SQLite direct comme avant
