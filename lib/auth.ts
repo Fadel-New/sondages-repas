@@ -23,6 +23,13 @@ declare module 'iron-session' {
   }
 }
 
+// Étendre le type IncomingMessage pour inclure la propriété session
+declare module 'http' {
+  interface IncomingMessage {
+    session?: import('iron-session').IronSession<import('iron-session').IronSessionData>;
+  }
+}
+
 export function withSessionRoute(handler: NextApiHandler) {
   return async function newHandler(req: NextApiRequest, res: NextApiResponse) {
     req.session = await getIronSession(req, res, sessionOptions);
