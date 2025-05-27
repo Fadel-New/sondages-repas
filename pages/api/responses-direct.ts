@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
+import { SurveyResponse } from '../../types';
 
 async function responsesDirectHandler(req: NextApiRequest, res: NextApiResponse) {
   const admin = req.session.admin;
@@ -45,7 +46,7 @@ async function responsesDirectHandler(req: NextApiRequest, res: NextApiResponse)
         typesRepas: response.typesRepas ? response.typesRepas.split(',') : [],
         defisAlimentation: response.defisAlimentation ? response.defisAlimentation.split(',') : [],
         aspectsImportants: response.aspectsImportants ? response.aspectsImportants.split(',') : []
-      }));
+      })) as SurveyResponse[];
 
       return res.status(200).json(formattedResponses);
     } catch (error) {

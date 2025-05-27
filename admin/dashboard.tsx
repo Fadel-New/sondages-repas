@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { SurveyResponse } from '@prisma/client'; // Assurez-vous d'avoir ce type
+import { SurveyResponse } from '../types'; // Using our custom type
 import Button from '../components/ui/Button';
 
 // Interface pour l'utilisateur admin connecté (simplifié)
@@ -54,8 +54,9 @@ const AdminDashboardPage = () => {
         }
         const data: SurveyResponse[] = await res.json();
         setResponses(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue';
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
