@@ -21,7 +21,9 @@ Assurez-vous de configurer ces variables d'environnement dans les paramètres du
    - Exemple: `ma-cle-secrete-tres-longue-et-complexe-pour-vercel`
 
 2. `DATABASE_URL`: L'URL de connexion à votre base de données PostgreSQL
-   - Exemple: `postgresql://user:password@host:port/database`
+   - **IMPORTANT**: L'URL doit obligatoirement commencer par `postgresql://` ou `postgres://`
+   - Format correct: `postgresql://utilisateur:mot_de_passe@hôte:port/base_de_données`
+   - Exemple: `postgresql://postgres:password123@db.example.com:5432/sondages_db`
    - Note: Pour une configuration facile, utilisez Vercel Postgres ou un service externe comme Supabase, Neon, etc.
 
 3. `ADMIN_USERNAME`: Le nom d'utilisateur administrateur (optionnel, par défaut "admin")

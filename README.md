@@ -89,3 +89,22 @@ Pour des instructions détaillées, consultez notre [Guide de déploiement Verce
 - Le système basculera automatiquement vers PostgreSQL en environnement de production
 - Pour tester la configuration PostgreSQL en local, utilisez `npm run use-postgres`
 - Pour revenir à SQLite en local, utilisez `npm run use-sqlite`
+
+### Résolution des problèmes courants de déploiement
+
+#### Erreur "the URL must start with the protocol postgresql:// or postgres://"
+
+Cette erreur survient lorsque la variable d'environnement `DATABASE_URL` n'est pas correctement configurée.
+
+**Solution**:
+1. Vérifiez que vous avez défini `DATABASE_URL` dans les variables d'environnement de Vercel
+2. Assurez-vous que la valeur commence exactement par `postgresql://` ou `postgres://`
+3. Format correct: `postgresql://utilisateur:mot_de_passe@hôte:port/base_de_données`
+
+#### Erreur "SQLITE_READONLY"
+
+Cette erreur survient si le système essaie d'utiliser SQLite en production.
+
+**Solution**:
+1. Vérifiez que `DATABASE_URL` est correctement configuré avec une URL PostgreSQL
+2. Vérifiez que le fournisseur dans le schéma Prisma est bien défini sur `postgresql`
