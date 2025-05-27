@@ -54,7 +54,7 @@ const SurveyForm = () => {
   const formRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  const handleChange = (id: keyof FormData, value: any, otherValue?: string) => {
+  const handleChange = (id: keyof FormData, value: unknown, otherValue?: string) => {
     if (id.endsWith('Autre')) {
       setFormData(prev => ({ ...prev, [id]: value }));
     } else if (otherValue !== undefined) {
@@ -72,6 +72,10 @@ const SurveyForm = () => {
     }
   };
 
+  // Fonction d'adaptation pour rendre compatible avec le composant Question
+  const handleQuestionChange = (id: string, value: unknown, otherValue?: string) => {
+    handleChange(id as keyof FormData, value, otherValue);
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -107,8 +111,9 @@ const SurveyForm = () => {
       window.scrollTo(0,0);
       // Optionnel: rediriger ou afficher un message de succès permanent
       // router.push('/merci');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue';
+      setError(errorMessage);
       window.scrollTo(0,0);
     } finally {
       setSubmitting(false);
@@ -148,7 +153,7 @@ const SurveyForm = () => {
           value={formData.ville}
           otherValue={formData.villeAutre}
           showOtherInput={formData.ville === 'Autre'}
-          onChange={(id, val, otherVal) => handleChange(id as keyof FormData, val, otherVal)}
+          onChange={handleQuestionChange}
           required
         />
         <Question
@@ -165,7 +170,7 @@ const SurveyForm = () => {
           value={formData.situationProfessionnelle}
           otherValue={formData.situationProfAutre}
           showOtherInput={formData.situationProfessionnelle === 'Autre'}
-          onChange={(id, val, otherVal) => handleChange(id as keyof FormData, val, otherVal)}
+          onChange={handleQuestionChange}
           required
         />
       </section>
@@ -185,7 +190,7 @@ const SurveyForm = () => {
             { value: 'Jamais', label: 'Jamais' },
           ]}
           value={formData.mangeExterieurFreq}
-          onChange={handleChange}
+          onChange={handleQuestionChange}
           required
         />
         <Question
@@ -200,7 +205,7 @@ const SurveyForm = () => {
             { value: 'Je ne cuisine pas', label: 'Je ne cuisine pas' },
           ]}
           value={formData.tempsPreparationRepas}
-          onChange={handleChange}
+          onChange={handleQuestionChange}
           required
         />
         <Question
@@ -216,7 +221,7 @@ const SurveyForm = () => {
             // { value: 'Autre', label: 'Autre (préciser)' }, // Géré avec showOtherInput et un champ texte séparé si nécessaire
           ]}
           value={formData.typesRepas}
-          onChange={handleChange}
+          onChange={handleQuestionChange}
           showOtherInput={true} // Toujours montrer l'input pour "Autre" pour les checkboxes
           otherValue={formData.typesRepasAutre}
           // required // Pour les checkboxes, la validation de "au moins un coché" est plus complexe, gérée dans handleSubmit
@@ -245,7 +250,7 @@ const SurveyForm = () => {
             { value: 'Difficulté à trouver des repas sains et équilibrés', label: 'Difficulté à trouver des repas sains et équilibrés' },
           ]}
           value={formData.defisAlimentation}
-          onChange={handleChange}
+          onChange={handleQuestionChange}
           showOtherInput={true}
           otherValue={formData.defisAlimentationAutre}
         />
@@ -265,7 +270,7 @@ const SurveyForm = () => {
           scaleMinLabel="Pas du tout satisfait"
           scaleMaxLabel="Très satisfait"
           value={formData.satisfactionAccesRepas}
-          onChange={handleChange}
+          onChange={handleQuestionChange}
           required
         />
       </section>
@@ -283,7 +288,7 @@ const SurveyForm = () => {
             { value: 'Non', label: 'Non' },
           ]}
           value={formData.interetSolutionRepas}
-          onChange={handleChange}
+          onChange={handleQuestionChange}
           required
         />
         <Question
@@ -300,7 +305,7 @@ const SurveyForm = () => {
             { value: 'Support à l\'économie locale (produits locaux)', label: 'Support à l\'économie locale (produits locaux)' },
           ]}
           value={formData.aspectsImportants}
-          onChange={handleChange}
+          onChange={handleQuestionChange}
           showOtherInput={true}
           otherValue={formData.aspectsImportantsAutre}
         />
@@ -328,7 +333,7 @@ const SurveyForm = () => {
             { value: 'Plus de 2500 FCFA', label: 'Plus de 2500 FCFA' },
           ]}
           value={formData.budgetJournalierRepas}
-          onChange={handleChange}
+          onChange={handleQuestionChange}
           required
         />
         <Question
@@ -343,7 +348,7 @@ const SurveyForm = () => {
             { value: 'Plus de 1250 FCFA', label: 'Plus de 1250 FCFA' },
           ]}
           value={formData.prixMaxRepas}
-          onChange={handleChange}
+          onChange={handleQuestionChange}
           required
         />
         <Question
@@ -358,7 +363,7 @@ const SurveyForm = () => {
             { value: 'Plus de 45 000 FCFA', label: 'Plus de 45 000 FCFA' },
           ]}
           value={formData.budgetMensuelAbo}
-          onChange={handleChange}
+          onChange={handleQuestionChange}
           required
         />
       </section>
@@ -371,7 +376,7 @@ const SurveyForm = () => {
           title="Avez-vous d'autres suggestions ou commentaires ?"
           type="paragraph"
           value={formData.commentaires}
-          onChange={handleChange}
+          onChange={handleQuestionChange}
         />
       </section>
 

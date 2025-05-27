@@ -127,8 +127,8 @@ const EnhancedSurveyForm = () => {
     setProgress(Math.round((filledFields / totalFields) * 100));
   };
 
-  const handleChange = (id: keyof FormData, value: any, otherValue?: string) => {
-    if (id.endsWith('Autre' as any)) {
+  const handleChange = (id: keyof FormData, value: unknown, otherValue?: string) => {
+    if (id.endsWith('Autre')) {
       setFormData(prev => ({ ...prev, [id]: value }));
     } else if (otherValue !== undefined) {
       // Pour les questions avec "Autre (préciser)"
@@ -146,7 +146,7 @@ const EnhancedSurveyForm = () => {
   };
 
   // Fonction d'adaptation pour rendre compatible avec le composant Question
-  const handleQuestionChange = (id: string, value: any, otherValue?: string) => {
+  const handleQuestionChange = (id: string, value: unknown, otherValue?: string) => {
     handleChange(id as keyof FormData, value, otherValue);
   };
 
@@ -188,8 +188,9 @@ const EnhancedSurveyForm = () => {
       setFormData(initialFormData); // Reset form
       window.scrollTo(0,0);
       setCurrentSection(1); // Retour à la première section
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue';
+      setError(errorMessage);
       window.scrollTo(0,0);
     } finally {
       setSubmitting(false);

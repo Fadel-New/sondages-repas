@@ -1,7 +1,7 @@
 // lib/auth.ts
 import { getIronSession } from 'iron-session';
 import { NextApiRequest, NextApiResponse, GetServerSidePropsContext, GetServerSidePropsResult, NextApiHandler } from 'next';
-import jwt from 'jsonwebtoken';
+// jwt supprimé car non utilisé
 import prisma from './db';
 import bcrypt from 'bcryptjs'; // Vous aurez besoin d'installer bcryptjs: npm install bcryptjs @types/bcryptjs
 
@@ -31,7 +31,7 @@ export function withSessionRoute(handler: NextApiHandler) {
 }
 
 // HOC pour protéger les pages SSR
-export function withSessionSsr<P extends { [key: string]: any } = { [key: string]: any }>(
+export function withSessionSsr<P extends Record<string, unknown> = Record<string, unknown>>(
   handler: (
     context: GetServerSidePropsContext,
   ) => GetServerSidePropsResult<P> | Promise<GetServerSidePropsResult<P>>,
