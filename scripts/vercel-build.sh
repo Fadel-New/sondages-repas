@@ -3,7 +3,11 @@
 
 # Valider la variable d'environnement DATABASE_URL
 echo "Validant la variable DATABASE_URL..."
-node scripts/validate-db-url.js
+NODE_ENV=production node scripts/validate-db-url.js
+
+# Adapter le schema Prisma pour la production
+echo "Adaptant le schema Prisma pour la production..."
+NODE_ENV=production node scripts/adapt-prisma-schema.js
 
 # Génération du client Prisma
 npx prisma generate --schema=./prisma/schema.prisma
