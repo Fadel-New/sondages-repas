@@ -3,3 +3,5 @@ cd /home/fadel/Workspaces/sondages-repas && npm run build
 cd /home/fadel/Workspaces/sondages-repas && npx tsc --noEmit
 cd /home/fadel/Workspaces/sondages-repas && npx eslint .
 cd /home/fadel/Workspaces/sondages-repas && npm run build
+cd /home/fadel/Workspaces/sondages-repas && npm run build
+cd /home/fadel/Workspaces/sondages-repas && npm run build -- --debug

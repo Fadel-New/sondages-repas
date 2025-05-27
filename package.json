@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "ESLINT_DISABLE_WARNINGS=1 next build --no-lint",
+    "build": "prisma generate && ESLINT_DISABLE_WARNINGS=1 next build --no-lint",
     "start": "next start",
     "lint": "next lint",
+    "postinstall": "prisma generate",
+    "prepare-production": "node scripts/prepare-production.js",
     "check-db": "node scripts/check-database-sync.js",
     "init-sqlite": "bash scripts/init-sqlite-direct.sh",
     "create-tables": "node scripts/create-tables.js",
