@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "NODE_ENV=production node scripts/validate-db-url.js && node scripts/adapt-prisma-schema.js && prisma generate --schema=./prisma/schema.prisma && prisma migrate deploy --schema=./prisma/schema.prisma && node scripts/init-vercel-db.js && ESLINT_DISABLE_WARNINGS=1 next build --no-lint",
+    "build": "bash scripts/vercel-build-auto.sh",
+    "build-manual": "NODE_ENV=production node scripts/validate-db-url.js && node scripts/adapt-prisma-schema.js && prisma generate --schema=./prisma/schema.prisma && prisma migrate deploy --schema=./prisma/schema.prisma && node scripts/init-vercel-db.js && ESLINT_DISABLE_WARNINGS=1 next build --no-lint",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate --schema=./prisma/schema.prisma",

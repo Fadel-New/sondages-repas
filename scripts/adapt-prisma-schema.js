@@ -12,7 +12,10 @@ function adaptSchema() {
   console.log('Adapting Prisma schema based on environment...');
   
   // Déterminer l'environnement
-  const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1';
+  const isVercel = process.env.VERCEL === '1';
+  const isProduction = process.env.NODE_ENV === 'production' || isVercel;
+  
+  console.log(`Environment: ${isProduction ? 'Production' : 'Development'}${isVercel ? ' (Vercel)' : ''}`);
   
   // Lire le contenu du schema actuel
   let schemaContent = fs.readFileSync(schemaPath, 'utf8');

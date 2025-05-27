@@ -9,9 +9,16 @@ Ce guide explique comment déployer correctement l'application sur Vercel avec P
    - Option recommandée : [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres)
    - Alternatives : [Supabase](https://supabase.com), [Neon](https://neon.tech), [Railway](https://railway.app)
 
-## Préparation pour le déploiement en production
+## Déploiement simplifié (IMPORTANT!)
 
-Le schéma Prisma est désormais configuré automatiquement pour utiliser PostgreSQL en production. Vous n'avez pas besoin de faire de modifications manuelles.
+Nous avons automatisé le processus de déploiement pour qu'il fonctionne même sans configurer DATABASE_URL au préalable.
+Cependant, **il est essentiel de configurer les variables d'environnement après le premier déploiement**:
+
+1. Faites votre premier déploiement sur Vercel en connectant votre dépôt GitHub
+2. Une fois le déploiement initial terminé, **configurez les variables d'environnement** dans le tableau de bord Vercel
+3. Redéployez l'application pour qu'elle utilise ces variables d'environnement
+
+Sans cette étape, votre application ne pourra pas accéder à une vraie base de données en production!
 
 ## Variables d'environnement requises
 

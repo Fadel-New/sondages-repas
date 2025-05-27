@@ -13,3 +13,5 @@ echo '# Prisma Migrate Lock File v1
 
 provider = "postgresql"' > /home/fadel/Workspaces/sondages-repas/prisma/migrations/migration_lock.toml
 cd /home/fadel/Workspaces/sondages-repas && npm install --save pg
+cat scripts/switch-db-mode.sh
+chmod +x scripts/prepare-vercel-deploy.sh

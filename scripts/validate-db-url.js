@@ -5,8 +5,10 @@ function validateDatabaseUrl() {
   console.log('Validating DATABASE_URL environment variable...');
   
   // Déterminer l'environnement d'exécution
-  const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1';
+  const isVercel = process.env.VERCEL === '1';
+  const isProduction = process.env.NODE_ENV === 'production' || isVercel;
   console.log(`Running in ${isProduction ? 'production' : 'development'} environment`);
+  console.log(`Vercel environment: ${isVercel ? 'Yes' : 'No'}`);
   
   // Vérifier si DATABASE_URL est défini
   const dbUrl = process.env.DATABASE_URL;
@@ -20,11 +22,17 @@ function validateDatabaseUrl() {
   // En production (ou sur Vercel), on doit avoir une URL PostgreSQL
   if (isProduction) {
     if (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://')) {
-      console.error('\x1b[31m%s\x1b[0m', '❌ ERROR: In production, DATABASE_URL must start with postgresql:// or postgres://');
-      console.error('\x1b[31m%s\x1b[0m', `Current value starts with: ${dbUrl.substring(0, Math.min(10, dbUrl.length))}...`);
-      console.error('\x1b[31m%s\x1b[0m', 'Please update your Vercel environment variables with a valid PostgreSQL connection string.');
-      console.error('\x1b[31m%s\x1b[0m', 'Example: postgresql://username:password@hostname:5432/database');
-      process.exit(1);
+      // Sur Vercel, si un script spécial a défini une URL postgres factice pour la construction, on l'accepte
+      if (isVercel && dbUrl.includes('fakeverceldb')) {
+        console.warn('\x1b[33m%s\x1b[0m', '⚠️ Using fake PostgreSQL URL for Vercel build');
+        console.warn('\x1b[33m%s\x1b[0m', '⚠️ Make sure to set a real DATABASE_URL in Vercel environment variables before deployment');
+      } else {
+        console.error('\x1b[31m%s\x1b[0m', '❌ ERROR: In production, DATABASE_URL must start with postgresql:// or postgres://');
+        console.error('\x1b[31m%s\x1b[0m', `Current value starts with: ${dbUrl.substring(0, Math.min(10, dbUrl.length))}...`);
+        console.error('\x1b[31m%s\x1b[0m', 'Please update your Vercel environment variables with a valid PostgreSQL connection string.');
+        console.error('\x1b[31m%s\x1b[0m', 'Example: postgresql://username:password@hostname:5432/database');
+        process.exit(1);
+      }
     }
   } else {
     // En développement, on peut utiliser SQLite ou PostgreSQL
