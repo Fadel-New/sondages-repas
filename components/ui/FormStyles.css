@@ -325,11 +325,3 @@
     box-shadow: 0 0 0 0 rgba(104, 211, 145, 0);
   }
 }
-
-/* Conteneur des questions avec ancre */
-.questions-container {
-  scroll-margin-top: 150px; /* Permet de défiler à une position qui évite le header */
-  padding-top: 20px;
-  position: relative; /* Pour s'assurer que la position est correcte */
-  scroll-behavior: smooth; /* Pour un défilement fluide */
-}

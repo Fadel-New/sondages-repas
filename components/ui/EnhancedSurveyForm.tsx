@@ -99,40 +99,19 @@ const EnhancedSurveyForm = () => {
     calculateProgress();
   }, [formData]);
 
-  // Pas besoin de références individuelles car on cible directement le conteneur des questions par son ID
-
-  // Scroll à la position du conteneur des questions plutôt qu'en haut
+  // Scroll en haut lorsqu'on change de section
   useEffect(() => {
-    // Attendons un court instant pour s'assurer que le DOM est bien mis à jour
-    const scrollTimer = setTimeout(() => {
-      // Utiliser le référencement naturel de l'élément par ID
-      const questionsContainer = document.getElementById('questions-container');
-      
-      if (questionsContainer) {
-        // Calcul d'une position de défilement qui place la section visible dans la fenêtre
-        const headerOffset = 150;
-        const elementPosition = questionsContainer.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-        
-        // Défilement avec animation douce
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth'
-        });
-      }
-    }, 100); // Court délai pour s'assurer que le DOM est mis à jour
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
     
     // Animer la nouvelle section
     setAnimateSection(true);
-    const animateTimer = setTimeout(() => {
+    const timer = setTimeout(() => {
       setAnimateSection(false);
     }, 1000);
     
-    // Nettoyer les deux timers
-    return () => {
-      clearTimeout(scrollTimer);
-      clearTimeout(animateTimer);
-    };
+    return () => clearTimeout(timer);
   }, [currentSection]);
 
   const calculateProgress = () => {
@@ -177,10 +156,8 @@ const EnhancedSurveyForm = () => {
     }
   };
 
-  const handleSubmit = async (e: FormEvent | React.MouseEvent) => {
-    if (e && e.preventDefault) {
-      e.preventDefault();
-    }
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
     setSubmitting(true);
     setError(null);
     setSuccessMessage(null);
@@ -241,9 +218,7 @@ const EnhancedSurveyForm = () => {
     if (!section) return null;
 
     return (
-      <div 
-        className={`form-section ${animateSection ? 'section-active' : ''}`}
-      >
+      <div className={`form-section ${animateSection ? 'section-active' : ''}`}>
         <div className="section-header">
           <img src={section.icon} alt={section.title} className="section-icon" />
           <h2>{`Section ${section.id}: ${section.title}`}</h2>
@@ -643,7 +618,7 @@ const EnhancedSurveyForm = () => {
       </div>
 
       {/* Utilisation d'une div au lieu d'un form pour éviter la soumission automatique */}
-      <div className="space-y-10 questions-container" id="questions-container">
+      <div className="space-y-10">
         {renderQuestions()}
       </div>
     </div>
