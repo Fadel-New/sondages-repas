@@ -1,18 +1,41 @@
-cd /home/fadel/Workspaces/sondages-repas && npm run build
-cd /home/fadel/Workspaces/sondages-repas && npm run build
-cd /home/fadel/Workspaces/sondages-repas && npx tsc --noEmit
-cd /home/fadel/Workspaces/sondages-repas && npx eslint .
-cd /home/fadel/Workspaces/sondages-repas && npm run build
-cd /home/fadel/Workspaces/sondages-repas && npm run build
-cd /home/fadel/Workspaces/sondages-repas && npm run build -- --debug
-cd /home/fadel/Workspaces/sondages-repas && npm run build
-cd /home/fadel/Workspaces/sondages-repas && npm install --save-dev ts-node
-chmod +x /home/fadel/Workspaces/sondages-repas/scripts/switch-db-mode.sh
-chmod +x /home/fadel/Workspaces/sondages-repas/scripts/vercel-build.sh
-echo '# Prisma Migrate Lock File v1
-
-provider = "postgresql"' > /home/fadel/Workspaces/sondages-repas/prisma/migrations/migration_lock.toml
-cd /home/fadel/Workspaces/sondages-repas && npm install --save pg
-cat scripts/switch-db-mode.sh
-chmod +x scripts/prepare-vercel-deploy.sh
-chmod +x scripts/vercel-build-auto.sh
+npx prisma generate
+mv /home/fadel/Workspaces/sondages-repas/prisma/migrations /home/fadel/Workspaces/sondages-repas/prisma/migrations_sqlite_backup
+npx prisma migrate dev --name initial_postgresql_setup --create-only
+npx prisma migrate deploy
+npx prisma generate
+rm -f /home/fadel/Workspaces/sondages-repas/prisma/dev.db /home/fadel/Workspaces/sondages-repas/prisma/dev.db-journal
+mv /home/fadel/Workspaces/sondages-repas/lib/db.ts /home/fadel/Workspaces/sondages-repas/lib/db.sqlite.ts
+mv /home/fadel/Workspaces/sondages-repas/lib/db.new.postgres.ts /home/fadel/Workspaces/sondages-repas/lib/db.ts
+mkdir -p /home/fadel/Workspaces/sondages-repas/prisma/migrations_history_backup && mv /home/fadel/Workspaces/sondages-repas/prisma/migrations/* /home/fadel/Workspaces/sondages-repas/prisma/migrations_history_backup/ && mkdir -p /home/fadel/Workspaces/sondages-repas/prisma/migrations
+rm -rf prisma/migrations/* && prisma migrate reset --force
+rm -rf prisma/migrations && mkdir -p prisma/migrations
+rm -rf prisma/migrations
+npx prisma migrate dev --name init_postgres --create-only
+find prisma/migrations -type f -name "*.sql" | xargs ls -la
+node scripts/setup-postgres.js
+npm uninstall sqlite sqlite3 better-sqlite3
+npm install --save pg
+node scripts/cleanup-sqlite.js
+npx prisma generate
+npm install --save bcryptjs
+npx prisma migrate dev --name add_admin_table
+node scripts/init-admin.js
+node scripts/fix-prisma-schema.js
+node scripts/fix-db-files.js
+cd /home/fadel/Workspaces/sondages-repas && npx prisma validate
+cd /home/fadel/Workspaces/sondages-repas && node scripts/init-admin.js
+cd /home/fadel/Workspaces/sondages-repas && npm run fix-prisma
+cd /home/fadel/Workspaces/sondages-repas && node scripts/init-admin.js
+cd /home/fadel/Workspaces/sondages-repas && npx prisma db pull
+cd /home/fadel/Workspaces/sondages-repas && node scripts/test-db-connection.js
+cd /home/fadel/Workspaces/sondages-repas && NODE_DEBUG=prisma node scripts/test-db-connection.js 2>&1
+cd /home/fadel/Workspaces/sondages-repas && node scripts/fix-env-vars.js
+cd /home/fadel/Workspaces/sondages-repas && node scripts/diagnose-connection.js
+cd /home/fadel/Workspaces/sondages-repas && node scripts/reset-prisma.js
+cd /home/fadel/Workspaces/sondages-repas && find . -name "schema*.prisma" | sort
+cd /home/fadel/Workspaces/sondages-repas && node scripts/force-postgres.js
+rm -rf /home/fadel/Workspaces/sondages-repas/node_modules/.prisma && rm -rf /home/fadel/Workspaces/sondages-repas/node_modules/@prisma/client
+cd /home/fadel/Workspaces/sondages-repas && npm install --force
+cd /home/fadel/Workspaces/sondages-repas && npx prisma generate
+cd /home/fadel/Workspaces/sondages-repas && node scripts/encode-passwords.js
+cd /home/fadel/Workspaces/sondages-repas && node -r dotenv/config scripts/verify-db-urls.js

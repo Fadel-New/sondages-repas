@@ -27,45 +27,54 @@ Assurez-vous de configurer ces variables d'environnement dans les paramètres du
 1. `JWT_SECRET`: Une chaîne secrète d'au moins 32 caractères pour sécuriser les sessions
    - Exemple: `ma-cle-secrete-tres-longue-et-complexe-pour-vercel`
 
-2. `DATABASE_URL`: L'URL de connexion à votre base de données PostgreSQL
+2. `DATABASE_URL`: L'URL de connexion à votre base de données PostgreSQL via un pool de connexions
    - **IMPORTANT**: L'URL doit obligatoirement commencer par `postgresql://` ou `postgres://`
-   - Format correct: `postgresql://utilisateur:mot_de_passe@hôte:port/base_de_données`
-   - Exemple: `postgresql://postgres:password123@db.example.com:5432/sondages_db`
-   - Note: Pour une configuration facile, utilisez Vercel Postgres ou un service externe comme Supabase, Neon, etc.
+   - Format: `postgresql://utilisateur:mot_de_passe@hôte:port/base_de_données?pgbouncer=true`
+   - Exemple avec Supabase: `postgresql://postgres.[ref]:[password]@aws-0-eu-central-1.pooler.supabase.com:6543/postgres?pgbouncer=true`
 
-3. `ADMIN_USERNAME`: Le nom d'utilisateur administrateur (optionnel, par défaut "admin")
+3. `DIRECT_URL`: L'URL de connexion directe à votre base de données PostgreSQL (pour les migrations)
+   - Format: `postgresql://utilisateur:mot_de_passe@hôte:port/base_de_données`
+   - Exemple avec Supabase: `postgresql://postgres.[ref]:[password]@aws-0-eu-central-1.pooler.supabase.com:5432/postgres`
 
-4. `ADMIN_PASSWORD`: Le mot de passe administrateur (optionnel, par défaut "password123")
+4. (Optionnel) `ADMIN_USERNAME` et `ADMIN_PASSWORD`: Pour définir les identifiants d'administrateur
+   - Exemple: `admin` et `mot_de_passe_securise`
 
-## Étapes de déploiement
+## Conseils pour les URL de base de données
 
-### 1. Préparation de la base de données PostgreSQL
+Si vous utilisez des mots de passe contenant des caractères spéciaux comme `@`, `&`, `#`, etc., assurez-vous qu'ils sont correctement encodés pour URL:
 
-Créez une base de données PostgreSQL et notez l'URL de connexion au format :
-```
-postgresql://utilisateur:mot_de_passe@hôte:port/base_de_données
-```
+- `@` devient `%40`
+- `&` devient `%26`
+- `#` devient `%23`
+- `%` devient `%25`
 
-### 2. Configuration du projet sur Vercel
+Exemple:
+- Mot de passe original: `p@ssw0rd&123`
+- Version encodée dans l'URL: `p%40ssw0rd%26123`
 
-1. Connectez votre dépôt GitHub à Vercel
-2. Dans les paramètres du projet, configurez les variables d'environnement suivantes :
-   - `DATABASE_URL` : L'URL de connexion à votre base de données PostgreSQL
-   - `JWT_SECRET` : Une chaîne aléatoire d'au moins 32 caractères
-   - `ADMIN_USERNAME` : Nom d'utilisateur admin (optionnel)
-   - `ADMIN_PASSWORD` : Mot de passe admin (optionnel)
+## Configuration pour Supabase
 
-### 3. Déploiement
+Si vous utilisez Supabase comme fournisseur de base de données PostgreSQL:
 
-Le processus de déploiement sur Vercel exécutera automatiquement :
-1. La génération du client Prisma
-2. Les migrations de base de données pour créer les tables
-3. La création d'un utilisateur admin par défaut
-4. La construction de l'application Next.js
+1. Créez un projet sur Supabase et accédez à la section Base de données
+2. Dans "Connection Pooling", copiez l'URL de connexion pour `DATABASE_URL`
+3. Dans "Connection String", copiez l'URL directe pour `DIRECT_URL`
+4. Ajoutez ces URLs à vos variables d'environnement Vercel
 
-## Dépannage
+## Résolution des problèmes courants
 
-### Problème : Erreur "Schema not found"
+### Problème : Erreur "Cannot find module '@prisma/client'"
+
+**Solution** : Ce problème se produit quand le client Prisma n'est pas généré correctement. Vérifiez dans votre tableau de bord de déploiement Vercel que `postinstall` s'exécute bien.
+
+### Problème : Erreur "the URL must start with the protocol postgresql:// or postgres://"
+
+**Solution** :
+- Vérifiez que `DATABASE_URL` est correctement configuré avec une URL PostgreSQL valide
+- Assurez-vous que l'URL commence bien par `postgresql://` ou `postgres://`
+- Vérifiez que les caractères spéciaux sont correctement encodés
+
+### Problème : Erreur "schema.prisma not found"
 
 **Solution** : Vérifiez que le chemin vers le fichier schema.prisma est correct. Le déploiement utilise `--schema=./prisma/schema.prisma`.
 
@@ -75,6 +84,7 @@ Le processus de déploiement sur Vercel exécutera automatiquement :
 - Vérifiez que l'URL de connexion est correcte
 - Assurez-vous que la base de données est accessible depuis Vercel
 - Vérifiez que l'utilisateur de la base de données a les permissions nécessaires
+- Pour Supabase, vérifiez que votre adresse IP est autorisée dans la configuration du réseau
 
 ### Problème : Erreur "Unknown file extension .ts"
 
@@ -83,17 +93,3 @@ Le processus de déploiement sur Vercel exécutera automatiquement :
 ### Problème : Erreur "Missing password" avec Iron Session
 
 **Solution** : Vérifiez que `JWT_SECRET` est correctement configuré dans les variables d'environnement Vercel.
-
-### Problème : Erreur "SQLITE_READONLY"
-
-**Solution** : Cette erreur indique que vous essayez d'utiliser SQLite en production. Notre configuration utilise maintenant automatiquement PostgreSQL en production.
-
-## Comment tester localement la configuration de production
-
-Pour tester localement que votre configuration fonctionne avec PostgreSQL:
-
-1. Installez PostgreSQL localement ou créez une base de données distante pour tester
-2. Exécutez `npm run use-postgres` et fournissez l'URL de connexion
-3. Exécutez `npx prisma migrate deploy` pour appliquer les migrations
-4. Lancez l'application avec `npm run dev` et vérifiez qu'elle fonctionne correctement
-5. Avant de revenir au développement normal, vous pouvez exécuter `npm run use-sqlite` pour revenir à SQLite

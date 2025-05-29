@@ -5,27 +5,27 @@
   "scripts": {
     "dev": "next dev",
     "build": "bash scripts/vercel-build-auto.sh",
-    "build-manual": "NODE_ENV=production node scripts/validate-db-url.js && node scripts/adapt-prisma-schema.js && prisma generate --schema=./prisma/schema.prisma && prisma migrate deploy --schema=./prisma/schema.prisma && node scripts/init-vercel-db.js && ESLINT_DISABLE_WARNINGS=1 next build --no-lint",
+    "build-manual": "NODE_ENV=production node scripts/validate-db-url.js && prisma generate --schema=./prisma/schema.prisma && prisma migrate deploy --schema=./prisma/schema.prisma && ESLINT_DISABLE_WARNINGS=1 next build --no-lint",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate --schema=./prisma/schema.prisma",
-    "prepare-production": "node scripts/prepare-production.js",
-    "use-postgres": "bash scripts/switch-db-mode.sh prod",
-    "use-sqlite": "bash scripts/switch-db-mode.sh dev",
     "prepare-vercel": "bash scripts/prepare-vercel-deploy.sh",
     "vercel-build": "bash scripts/vercel-build.sh",
     "check-db": "node scripts/check-database-sync.js",
-    "init-sqlite": "bash scripts/init-sqlite-direct.sh",
-    "create-tables": "node scripts/create-tables.js",
-    "init-db-better": "node scripts/init-db-better.js",
-    "init-db-root": "node scripts/init-db-root.js",
-    "test-csv": "node scripts/test-csv-export.js"
+    "prisma:generate": "prisma generate --schema=./prisma/schema.prisma",
+    "prisma:migrate": "prisma migrate dev --name",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:studio": "prisma studio",
+    "test-csv": "node scripts/test-csv-export.js",
+    "setup-postgres": "node scripts/setup-postgres.js",
+    "cleanup": "node scripts/cleanup-sqlite.js",
+    "init-admin": "node scripts/init-admin.js",
+    "fix-prisma": "node scripts/fix-prisma-schema.js && node scripts/fix-db-files.js && npm run prisma:generate"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
     "@types/bcryptjs": "^3.0.0",
     "bcryptjs": "^3.0.2",
-    "better-sqlite3": "^11.10.0",
     "chart.js": "^4.4.9",
     "iron-session": "^8.0.4",
     "jsonwebtoken": "^9.0.2",
@@ -34,9 +34,7 @@
     "pg": "^8.16.0",
     "react": "^19.0.0",
     "react-chartjs-2": "^5.3.0",
-    "react-dom": "^19.0.0",
-    "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

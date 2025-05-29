@@ -2,8 +2,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withSessionRoute } from '../../lib/auth';
 import prisma from '../../lib/db';
+import bcrypt from 'bcryptjs';
 
-// Version simplifiée de la page de connexion qui n'utilise pas bcrypt ni ensureAdminUser
 async function loginDirectRoute(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
@@ -16,17 +16,30 @@ async function loginDirectRoute(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    // Vérifier directement les identifiants (pour le débogage uniquement)
-    // Dans un environnement de production, utilisez bcrypt pour comparer les mots de passe
-    if (username === 'admin' && password === 'password123') {
+    // Chercher l'utilisateur dans la base de données
+    const admin = await prisma.admin.findUnique({
+      where: {
+        username: username
+      }
+    });
+
+    // Si l'utilisateur n'est pas trouvé
+    if (!admin) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    // Vérifier le mot de passe avec bcrypt
+    const passwordMatch = await bcrypt.compare(password, admin.password);
+
+    if (passwordMatch) {
       // Authentification réussie, enregistrer dans la session
       req.session.admin = {
-        username: 'admin',
+        username: admin.username,
         isLoggedIn: true,
       };
       await req.session.save();
 
-      return res.status(200).json({ message: 'Login successful', username: 'admin' });
+      return res.status(200).json({ message: 'Login successful', username: admin.username });
     } else {
       return res.status(401).json({ message: 'Invalid credentials' });
     }

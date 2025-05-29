@@ -6,9 +6,7 @@ Ce projet est une plateforme de sondage qui permet aux utilisateurs de répondre
 
 - **Frontend**: Next.js, React, Tailwind CSS
 - **Backend**: Next.js API Routes
-- **Base de données**: 
-  - Développement: SQLite via Prisma
-  - Production: PostgreSQL via Prisma
+- **Base de données**: PostgreSQL via Prisma
 - **Authentication**: Iron Session
 
 ## Fonctionnalités
@@ -40,13 +38,14 @@ Ce projet est une plateforme de sondage qui permet aux utilisateurs de répondre
 
 3. Configurez les variables d'environnement :
    ```bash
-   cp .env.production.example .env.local
-   # Modifiez les valeurs dans .env.local selon vos besoins
+   cp .env.example .env.local
+   # Modifiez les valeurs dans .env.local avec vos informations de connexion PostgreSQL
    ```
 
-4. Initialisez la base de données SQLite (développement) :
+4. Générez le client Prisma et appliquez les migrations :
    ```bash
-   npm run init-sqlite
+   npm run prisma:generate
+   npm run prisma:migrate init_postgres
    ```
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
@@ -86,9 +85,8 @@ Pour des instructions détaillées, consultez notre [Guide de déploiement Verce
 
 ### Informations importantes
 
-- Le système basculera automatiquement vers PostgreSQL en environnement de production
-- Pour tester la configuration PostgreSQL en local, utilisez `npm run use-postgres`
-- Pour revenir à SQLite en local, utilisez `npm run use-sqlite`
+- Le projet utilise PostgreSQL dans tous les environnements (développement et production)
+- Utilisez Prisma Studio pour explorer la base de données : `npm run prisma:studio`
 
 ### Résolution des problèmes courants de déploiement
 
@@ -101,10 +99,11 @@ Cette erreur survient lorsque la variable d'environnement `DATABASE_URL` n'est p
 2. Assurez-vous que la valeur commence exactement par `postgresql://` ou `postgres://`
 3. Format correct: `postgresql://utilisateur:mot_de_passe@hôte:port/base_de_données`
 
-#### Erreur "SQLITE_READONLY"
+#### Erreur de connexion PostgreSQL
 
-Cette erreur survient si le système essaie d'utiliser SQLite en production.
+Si vous rencontrez des erreurs de connexion à la base de données, vérifiez les points suivants :
 
 **Solution**:
-1. Vérifiez que `DATABASE_URL` est correctement configuré avec une URL PostgreSQL
-2. Vérifiez que le fournisseur dans le schéma Prisma est bien défini sur `postgresql`
+1. Assurez-vous que les variables `DATABASE_URL` et `DIRECT_URL` sont correctement configurées
+2. Vérifiez que les identifiants PostgreSQL sont corrects et que les caractères spéciaux sont bien URL-encodés
+3. Assurez-vous que votre adresse IP est autorisée dans les règles de pare-feu de votre base de données PostgreSQL

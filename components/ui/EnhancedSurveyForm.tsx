@@ -156,8 +156,10 @@ const EnhancedSurveyForm = () => {
     }
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e: FormEvent | React.MouseEvent) => {
+    if (e && e.preventDefault) {
+      e.preventDefault();
+    }
     setSubmitting(true);
     setError(null);
     setSuccessMessage(null);
@@ -535,7 +537,8 @@ const EnhancedSurveyForm = () => {
             </Button>
           ) : (
             <Button 
-              type="submit" 
+              type="button" 
+              onClick={(e) => handleSubmit(e as any)}
               disabled={submitting} 
               variant="primary" 
               className="text-lg px-8 py-3 submit-button"
@@ -613,9 +616,10 @@ const EnhancedSurveyForm = () => {
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-10">
+      {/* Utilisation d'une div au lieu d'un form pour éviter la soumission automatique */}
+      <div className="space-y-10">
         {renderQuestions()}
-      </form>
+      </div>
     </div>
   );
 };

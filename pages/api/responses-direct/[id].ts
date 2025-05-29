@@ -1,11 +1,7 @@
 // pages/api/responses-direct/[id].ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withSessionRoute } from '../../../lib/auth';
-import fs from 'fs';
-import path from 'path';
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../../lib/db'; // Import the shared instance
 
 // Extension de type pour inclure la propriété session
 declare module 'next' {
@@ -30,79 +26,84 @@ async function responseDetailHandler(req: NextApiRequest, res: NextApiResponse) 
 
   if (req.method === 'GET') {
     try {
-      let response;
+      const response = await prisma.surveyResponse.findUnique({
+        where: {
+          id: parseInt(id, 10)
+        }
+      });
       
-      // Déterminer si nous sommes en production ou en développement
-      if (process.env.NODE_ENV === 'production') {
-        // En production, utiliser le client Prisma
-        const prisma = new PrismaClient();
-        
-        try {
-          response = await prisma.surveyResponse.findUnique({
-            where: {
-              id: parseInt(id, 10)
-            }
-          });
-          
-          await prisma.$disconnect();
-          
-          if (!response) {
-            return res.status(404).json({ message: 'Réponse introuvable' });
-          }
-          
-        } catch (prismaError) {
-          console.error("Erreur Prisma:", prismaError);
-          await prisma.$disconnect();
-          throw prismaError;
-        }
-      } else {
-        // En développement, utiliser SQLite direct
-        // Chemin de la base de données - utiliser un chemin relatif plus fiable
-        const dbPath = path.join(process.cwd(), 'prisma.db');
-
-        // Vérifier si la base de données existe
-        if (!fs.existsSync(dbPath)) {
-          console.log("La base de données n'existe pas:", dbPath);
-          return res.status(404).json({ message: 'Base de données introuvable' });
-        }
-
-        // Ouvrir la connexion à la base de données
-        const db = await open({
-          filename: dbPath,
-          driver: sqlite3.Database
-        });
-
-        // Récupérer la réponse avec l'ID spécifié
-        response = await db.get(`
-          SELECT * FROM SurveyResponse
-          WHERE id = ?
-        `, id);
-
-      // Fermer la connexion
-      await db.close();
-
       if (!response) {
         return res.status(404).json({ message: 'Réponse introuvable' });
       }
-      }
-
-      // Convertir les chaînes en tableaux et formater les dates
+      
+      // Convertir les chaînes séparées par des virgules en tableaux
       const formattedResponse = {
         ...response,
-        createdAt: process.env.NODE_ENV === 'production' ? response.createdAt.toISOString() : response.createdAt,
+        createdAt: response.createdAt.toISOString(),
         typesRepas: response.typesRepas ? response.typesRepas.split(',') : [],
         defisAlimentation: response.defisAlimentation ? response.defisAlimentation.split(',') : [],
         aspectsImportants: response.aspectsImportants ? response.aspectsImportants.split(',') : []
       };
-
+      
       return res.status(200).json(formattedResponse);
     } catch (error) {
-      console.error('Erreur récupération détails de la réponse:', error);
-      return res.status(500).json({ message: 'Erreur serveur', details: error instanceof Error ? error.message : 'Unknown error' });
+      console.error("Erreur lors de la récupération de la réponse:", error);
+      return res.status(500).json({ message: 'Erreur serveur' });
+    }
+  } else if (req.method === 'PUT' || req.method === 'PATCH') {
+    try {
+      const updateData = req.body;
+      
+      // Validation rapide
+      if (!updateData) {
+        return res.status(400).json({ message: 'Données de mise à jour manquantes' });
+      }
+      
+      // Conversion des tableaux en chaînes pour le stockage
+      if (updateData.typesRepas && Array.isArray(updateData.typesRepas)) {
+        updateData.typesRepas = updateData.typesRepas.join(',');
+      }
+      
+      if (updateData.defisAlimentation && Array.isArray(updateData.defisAlimentation)) {
+        updateData.defisAlimentation = updateData.defisAlimentation.join(',');
+      }
+      
+      if (updateData.aspectsImportants && Array.isArray(updateData.aspectsImportants)) {
+        updateData.aspectsImportants = updateData.aspectsImportants.join(',');
+      }
+      
+      // Mise à jour via Prisma
+      const updatedResponse = await prisma.surveyResponse.update({
+        where: {
+          id: parseInt(id, 10)
+        },
+        data: updateData
+      });
+      
+      return res.status(200).json({
+        message: 'Réponse mise à jour avec succès',
+        response: updatedResponse
+      });
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de la réponse:", error);
+      return res.status(500).json({ message: 'Erreur serveur lors de la mise à jour' });
+    }
+  } else if (req.method === 'DELETE') {
+    try {
+      await prisma.surveyResponse.delete({
+        where: {
+          id: parseInt(id, 10)
+        }
+      });
+      
+      return res.status(200).json({ message: 'Réponse supprimée avec succès' });
+    } catch (error) {
+      console.error("Erreur lors de la suppression de la réponse:", error);
+      return res.status(500).json({ message: 'Erreur serveur lors de la suppression' });
     }
   } else {
-    res.setHeader('Allow', ['GET']);
-    return res.status(405).end(`Method ${req.method} Not Allowed`);
+    res.setHeader('Allow', ['GET', 'PUT', 'PATCH', 'DELETE']);
+    return res.status(405).json({ message: `Méthode ${req.method} non autorisée` });
   }
 }
 

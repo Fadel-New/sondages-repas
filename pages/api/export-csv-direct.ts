@@ -1,8 +1,7 @@
 // pages/api/export-csv-direct.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withSessionRoute } from '../../lib/auth';
-import fs from 'fs';
-import path from 'path';
+import prisma from '../../lib/db';
 
 // Extension de type pour inclure la propriété session
 declare module 'next' {
@@ -10,9 +9,6 @@ declare module 'next' {
     session: any;
   }
 }
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
-import { PrismaClient } from '@prisma/client';
 
 // Fonction pour convertir des données en CSV
 function convertToCsv(data: any[]): string {
@@ -49,14 +45,14 @@ function convertToCsv(data: any[]): string {
       
       // Traitement spécial pour les champs à valeurs multiples stockés comme chaînes séparées par des virgules
       if (['typesRepas', 'defisAlimentation', 'aspectsImportants'].includes(header) && typeof value === 'string') {
-        // Pour ces champs, on remplace les virgules par des points-virgules pour éviter la confusion avec les séparateurs CSV
-        return `"${value.replace(/,/g, '; ')}"`;
+        return `"${value.replace(/,/g, ', ')}"`;
       }
       
+      // Échapper les guillemets doubles et placer le contenu entre guillemets
       if (typeof value === 'string') {
-        // Échapper les guillemets dans le texte et entourer le texte de guillemets
         return `"${value.replace(/"/g, '""')}"`;
       }
+      
       return value;
     });
     csv += values.join(',') + '\n';
@@ -65,64 +61,28 @@ function convertToCsv(data: any[]): string {
   return csv;
 }
 
+// Route pour l'exportation CSV sans utiliser les utilitaires
 async function exportCsvDirectHandler(req: NextApiRequest, res: NextApiResponse) {
   const admin = req.session.admin;
 
   if (!admin || !admin.isLoggedIn) {
-    return res.status(401).json({ message: 'Non autorisé' });
+    return res.status(401).send('Non autorisé. Veuillez vous connecter.');
   }
 
   if (req.method === 'GET') {
+    let responses = [];
+
     try {
-      let responses = [];
-
-      // Déterminer si nous sommes en production ou en développement
-      if (process.env.NODE_ENV === 'production') {
-        // En production, utiliser le client Prisma
-        const prisma = new PrismaClient();
-        
-        try {
-          responses = await prisma.surveyResponse.findMany({
-            orderBy: {
-              createdAt: 'desc'
-            }
-          });
-          
-          // Convertir les dates en format standard pour le traitement
-          responses = responses.map(r => ({
-            ...r,
-            createdAt: r.createdAt.toISOString()
-          }));
-          
-          await prisma.$disconnect();
-        } catch (prismaError) {
-          console.error("Erreur Prisma pour l'export CSV:", prismaError);
-          await prisma.$disconnect();
-          throw prismaError;
-        }
-      } else {
-        // En développement, utiliser l'approche SQLite
-        const dbPath = path.join(process.cwd(), 'prisma.db');
-
-        // Vérifier si la base de données existe
-        if (!fs.existsSync(dbPath)) {
-          return res.status(404).send('Aucune réponse à exporter.');
-        }
-
-        // Ouvrir la connexion à la base de données
-        const db = await open({
-          filename: dbPath,
-          driver: sqlite3.Database
+      try {
+        // Utiliser Prisma pour récupérer les données
+        responses = await prisma.surveyResponse.findMany({
+          orderBy: {
+            createdAt: 'desc'
+          }
         });
-
-        // Récupérer les réponses
-        responses = await db.all(`
-          SELECT * FROM SurveyResponse
-          ORDER BY createdAt DESC
-        `);
-
-        // Fermer la connexion
-        await db.close();
+      } catch (prismaError) {
+        console.error("Erreur Prisma dans export-csv-direct:", prismaError);
+        throw prismaError;
       }
 
       if (responses.length === 0) {
@@ -131,13 +91,11 @@ async function exportCsvDirectHandler(req: NextApiRequest, res: NextApiResponse)
       
       // Formater les réponses pour l'exportation CSV
       const formattedResponses = responses.map(response => {
-        // Conserver l'original tout en faisant une petite transformation pour le CSV
-        const formatted = { ...response };
-
-        // Convertir typesRepas, defisAlimentation, aspectsImportants pour rendre plus lisible
-        // Si la valeur contient des virgules, elle sera correctement traitée par convertToCsv
-        
-        return formatted;
+        // Convertir l'objet Date en chaîne pour le CSV
+        return {
+          ...response,
+          createdAt: response.createdAt instanceof Date ? response.createdAt.toISOString() : response.createdAt
+        };
       });
 
       const csvData = convertToCsv(formattedResponses);

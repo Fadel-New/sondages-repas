@@ -1,8 +1,8 @@
 // scripts/validate-db-url.js
-// Script pour valider l'URL de la base de données avant le build
+// Script pour valider l'URL de la base de données PostgreSQL avant le build
 
 function validateDatabaseUrl() {
-  console.log('Validating DATABASE_URL environment variable...');
+  console.log('Validating DATABASE_URL and DIRECT_URL environment variables...');
   
   // Déterminer l'environnement d'exécution
   const isVercel = process.env.VERCEL === '1';
@@ -12,6 +12,7 @@ function validateDatabaseUrl() {
   
   // Vérifier si DATABASE_URL est défini
   const dbUrl = process.env.DATABASE_URL;
+  const directUrl = process.env.DIRECT_URL;
   
   if (!dbUrl) {
     console.error('\x1b[31m%s\x1b[0m', '❌ ERROR: DATABASE_URL environment variable is not set!');
@@ -19,54 +20,47 @@ function validateDatabaseUrl() {
     process.exit(1);
   }
   
-  // En production (ou sur Vercel), on doit avoir une URL PostgreSQL
-  if (isProduction) {
-    if (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://')) {
-      // Sur Vercel, si un script spécial a défini une URL postgres factice pour la construction, on l'accepte
-      if (isVercel && dbUrl.includes('fakeverceldb')) {
-        console.warn('\x1b[33m%s\x1b[0m', '⚠️ Using fake PostgreSQL URL for Vercel build');
-        console.warn('\x1b[33m%s\x1b[0m', '⚠️ Make sure to set a real DATABASE_URL in Vercel environment variables before deployment');
-      } else {
-        console.error('\x1b[31m%s\x1b[0m', '❌ ERROR: In production, DATABASE_URL must start with postgresql:// or postgres://');
-        console.error('\x1b[31m%s\x1b[0m', `Current value starts with: ${dbUrl.substring(0, Math.min(10, dbUrl.length))}...`);
-        console.error('\x1b[31m%s\x1b[0m', 'Please update your Vercel environment variables with a valid PostgreSQL connection string.');
-        console.error('\x1b[31m%s\x1b[0m', 'Example: postgresql://username:password@hostname:5432/database');
-        process.exit(1);
-      }
-    }
-  } else {
-    // En développement, on peut utiliser SQLite ou PostgreSQL
-    if (dbUrl.startsWith('file:')) {
-      console.log('\x1b[32m%s\x1b[0m', '✅ Using SQLite database in development mode');
-    } else if (dbUrl.startsWith('postgresql://') || dbUrl.startsWith('postgres://')) {
-      console.log('\x1b[32m%s\x1b[0m', '✅ Using PostgreSQL database in development mode');
+  // Vérifier que l'URL commence par postgresql:// ou postgres://
+  if (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://')) {
+    // Sur Vercel, si un script spécial a défini une URL postgres factice pour la construction, on l'accepte
+    if (isVercel && dbUrl.includes('fakeverceldb')) {
+      console.warn('\x1b[33m%s\x1b[0m', '⚠️ Using fake PostgreSQL URL for Vercel build');
+      console.warn('\x1b[33m%s\x1b[0m', '⚠️ Make sure to set a real DATABASE_URL in Vercel environment variables before deployment');
     } else {
-      console.warn('\x1b[33m%s\x1b[0m', '⚠️ WARNING: DATABASE_URL has an unrecognized format');
-      console.warn('\x1b[33m%s\x1b[0m', 'Expected format for SQLite: file:./path/to/db');
-      console.warn('\x1b[33m%s\x1b[0m', 'Expected format for PostgreSQL: postgresql://username:password@hostname:5432/database');
-      // En développement, on continue quand même
+      console.error('\x1b[31m%s\x1b[0m', '❌ ERROR: DATABASE_URL must start with postgresql:// or postgres://');
+      console.error('\x1b[31m%s\x1b[0m', `Current value starts with: ${dbUrl.substring(0, Math.min(10, dbUrl.length))}...`);
+      console.error('\x1b[31m%s\x1b[0m', 'Please update your environment variables with a valid PostgreSQL connection string.');
+      console.error('\x1b[31m%s\x1b[0m', 'Example: postgresql://username:password@hostname:5432/database');
+      process.exit(1);
     }
   }
   
-  // Vérifier que l'URL contient un nom d'hôte
+  // Vérifier DIRECT_URL pour les migrations Prisma (facultatif)
+  if (!directUrl && !isVercel) {
+    console.warn('\x1b[33m%s\x1b[0m', '⚠️ WARNING: DIRECT_URL environment variable is not set');
+    console.warn('\x1b[33m%s\x1b[0m', 'This is recommended for connecting directly to PostgreSQL for Prisma migrations');
+  } else if (directUrl && !directUrl.startsWith('postgresql://') && !directUrl.startsWith('postgres://')) {
+    console.warn('\x1b[33m%s\x1b[0m', '⚠️ WARNING: DIRECT_URL should start with postgresql:// or postgres://');
+  }
+  
+  console.log('\x1b[32m%s\x1b[0m', '✅ DATABASE_URL validation passed');
+  
+  // Extraire le hostname pour vérification supplémentaire
   try {
-    const url = new URL(dbUrl);
-    if (!url.hostname) {
-      console.error('\x1b[31m%s\x1b[0m', '❌ ERROR: DATABASE_URL is missing a hostname');
-      console.error('\x1b[31m%s\x1b[0m', 'Please provide a valid PostgreSQL connection string.');
-      process.exit(1);
+    let hostname = null;
+    // Utiliser une regex pour extraire le hostname
+    const match = dbUrl.match(/postgres(ql)?:\/\/[^:]+:[^@]+@([^:]+):/);
+    
+    if (match && match[2]) {
+      hostname = match[2];
+      console.log(`✅ Hostname identified: ${hostname}`);
+    } else if (!isVercel || !dbUrl.includes('fakeverceldb')) {
+      console.warn('\x1b[33m%s\x1b[0m', '⚠️ Could not parse hostname from DATABASE_URL');
     }
-    
-    console.log('\x1b[32m%s\x1b[0m', '✅ DATABASE_URL validation passed!');
-    console.log(`   Protocol: ${url.protocol}`);
-    console.log(`   Host: ${url.hostname}`);
-    console.log(`   Database path: ${url.pathname}`);
-    
   } catch (error) {
-    console.error('\x1b[31m%s\x1b[0m', '❌ ERROR: DATABASE_URL is not a valid URL');
-    console.error('\x1b[31m%s\x1b[0m', 'Please ensure it follows the format: postgresql://username:password@hostname:5432/database');
-    process.exit(1);
+    console.warn('\x1b[33m%s\x1b[0m', '⚠️ Error parsing DATABASE_URL:', error.message);
   }
 }
 
+// Exécuter la validation
 validateDatabaseUrl();
