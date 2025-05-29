@@ -8,15 +8,13 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
 
 const Textarea: React.FC<TextareaProps> = ({ label, name, error, className, ...props }) => {
   // Fonction pour gérer les touches dans le textarea
+  // Avec la nouvelle structure (div au lieu de form), nous n'avons plus besoin
+  // d'empêcher le comportement par défaut de la touche Entrée
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Si Enter est pressé sans Shift, on empêche la soumission automatique du formulaire
-    // mais on permet quand même d'ajouter une nouvelle ligne (comportement par défaut)
-    if (e.key === 'Enter') {
-      // Ne pas empêcher le comportement par défaut, car nous ne sommes plus dans un form
-      // Laisser l'entrée se produire normalement
-    }
+    // Permettre d'ajouter des nouvelles lignes normalement avec la touche Entrée
+    // sans se soucier de la soumission du formulaire (qui n'existe plus)
     
-    // Passage de l'événement à onKeyDown si défini
+    // Passage de l'événement à onKeyDown si défini par le parent
     if (props.onKeyDown) {
       props.onKeyDown(e as any);
     }
@@ -34,7 +32,7 @@ const Textarea: React.FC<TextareaProps> = ({ label, name, error, className, ...p
         {...props}
       />
       {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
-      <p className="mt-1 text-xs text-gray-500">Vous pouvez utiliser Entrée pour ajouter une nouvelle ligne. Le formulaire ne sera envoyé que lorsque vous cliquerez sur le bouton "Soumettre mes réponses".</p>
+      <p className="mt-1 text-xs text-gray-500">N'hésitez pas à écrire vos commentaires sur plusieurs lignes. Le formulaire ne sera envoyé que lorsque vous cliquerez sur le bouton "Soumettre mes réponses".</p>
     </div>
   );
 };

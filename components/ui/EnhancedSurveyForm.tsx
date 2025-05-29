@@ -99,19 +99,40 @@ const EnhancedSurveyForm = () => {
     calculateProgress();
   }, [formData]);
 
-  // Scroll en haut lorsqu'on change de section
+  // Pas besoin de références individuelles car on cible directement le conteneur des questions par son ID
+
+  // Scroll à la position du conteneur des questions plutôt qu'en haut
   useEffect(() => {
-    if (formRef.current) {
-      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    // Attendons un court instant pour s'assurer que le DOM est bien mis à jour
+    const scrollTimer = setTimeout(() => {
+      // Utiliser le référencement naturel de l'élément par ID
+      const questionsContainer = document.getElementById('questions-container');
+      
+      if (questionsContainer) {
+        // Calcul d'une position de défilement qui place la section visible dans la fenêtre
+        const headerOffset = 150;
+        const elementPosition = questionsContainer.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        
+        // Défilement avec animation douce
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100); // Court délai pour s'assurer que le DOM est mis à jour
     
     // Animer la nouvelle section
     setAnimateSection(true);
-    const timer = setTimeout(() => {
+    const animateTimer = setTimeout(() => {
       setAnimateSection(false);
     }, 1000);
     
-    return () => clearTimeout(timer);
+    // Nettoyer les deux timers
+    return () => {
+      clearTimeout(scrollTimer);
+      clearTimeout(animateTimer);
+    };
   }, [currentSection]);
 
   const calculateProgress = () => {
@@ -220,7 +241,9 @@ const EnhancedSurveyForm = () => {
     if (!section) return null;
 
     return (
-      <div className={`form-section ${animateSection ? 'section-active' : ''}`}>
+      <div 
+        className={`form-section ${animateSection ? 'section-active' : ''}`}
+      >
         <div className="section-header">
           <img src={section.icon} alt={section.title} className="section-icon" />
           <h2>{`Section ${section.id}: ${section.title}`}</h2>
@@ -556,15 +579,18 @@ const EnhancedSurveyForm = () => {
       <div className="survey-header">
         <h1 className="text-4xl font-bold text-green-700 mb-3">Sondage sur les solutions de repas</h1>
         <p className="text-gray-600">
-          Nous cherchons à comprendre vos habitudes alimentaires et vos besoins pour développer des solutions adaptées.
+          Bonjour ! Nous réalisons une étude sur les habitudes alimentaires afin de développer des solutions de repas pratiques et adaptées aux besoins de la population. Ce sondage vise à comprendre comment améliorer l'accès à des repas quotidiens qui soient à la fois commodes, abordables et variés. Vos réponses nous aideront à façonner un service qui répond véritablement à vos attentes, quel que soit votre lieu de résidence. Merci de votre précieuse contribution.
         </p>
         
         {/* Hero image for the form */}
         <div className="mt-6 mb-8">
-          <img 
-            src="https://images.unsplash.com/photo-1543339494-b4cd4f7ba686?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
-            alt="Repas sains et délicieux" 
+          <Image 
+            src="/images/repas.jpeg"
+            alt="Repas sains et délicieux"
             className="form-hero-image"
+            width={800}
+            height={350}
+            priority
           />
         </div>
         
@@ -617,7 +643,7 @@ const EnhancedSurveyForm = () => {
       </div>
 
       {/* Utilisation d'une div au lieu d'un form pour éviter la soumission automatique */}
-      <div className="space-y-10">
+      <div className="space-y-10 questions-container" id="questions-container">
         {renderQuestions()}
       </div>
     </div>
