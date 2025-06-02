@@ -11,7 +11,7 @@ interface Option {
 interface QuestionProps {
   id: string;
   title: string;
-  type: 'multiple-choice' | 'checkbox' | 'linear-scale' | 'paragraph' | 'text-with-other';
+  type: 'multiple-choice' | 'checkbox' | 'linear-scale' | 'paragraph' | 'text-with-other' | 'email';
   options?: Option[];
   scaleMin?: number;
   scaleMax?: number;
@@ -144,6 +144,18 @@ const Question: React.FC<QuestionProps> = ({
           onChange={(e) => onChange(id, e.target.value)}
           placeholder="Votre réponse..."
           required={required}
+        />
+      )}
+      
+      {type === 'email' && (
+        <Input
+          type="email"
+          name={id}
+          value={value || ''}
+          onChange={(e) => onChange(id, e.target.value)}
+          placeholder="exemple@domaine.com"
+          required={required}
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
         />
       )}
     </div>

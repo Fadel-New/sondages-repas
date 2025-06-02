@@ -1,6 +1,7 @@
 // pages/api/submit-survey-direct.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../lib/db'; // Import the shared instance
+import { Prisma } from '@prisma/client';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -30,30 +31,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       : surveyData.aspectsImportants || '';
 
     try {
+      // Créer un objet pour contenir les données de création
+      const createData: Prisma.SurveyResponseCreateInput = {
+        ville: surveyData.ville,
+        villeAutre: surveyData.villeAutre || null,
+        situationProfessionnelle: surveyData.situationProfessionnelle,
+        situationProfAutre: surveyData.situationProfAutre || null,
+        mangeExterieurFreq: surveyData.mangeExterieurFreq,
+        tempsPreparationRepas: surveyData.tempsPreparationRepas,
+        typesRepas: typesRepasString,
+        typesRepasAutre: surveyData.typesRepasAutre || null,
+        defisAlimentation: defisAlimentationString,
+        defisAlimentationAutre: surveyData.defisAlimentationAutre || null,
+        satisfactionAccesRepas: parseInt(surveyData.satisfactionAccesRepas, 10),
+        interetSolutionRepas: surveyData.interetSolutionRepas,
+        aspectsImportants: aspectsImportantsString,
+        aspectsImportantsAutre: surveyData.aspectsImportantsAutre || null,
+        budgetJournalierRepas: surveyData.budgetJournalierRepas,
+        prixMaxRepas: surveyData.prixMaxRepas,
+        budgetMensuelAbo: surveyData.budgetMensuelAbo,
+        commentaires: surveyData.commentaires || null,
+        acceptePolitique: Boolean(surveyData.acceptePolitique)
+      };
+
+      // Ajouter les champs optionnels s'ils sont présents
+      if (surveyData.email !== undefined) {
+        createData.email = surveyData.email || null;
+      }
+      
+      if (surveyData.sexe !== undefined) {
+        createData.sexe = surveyData.sexe || null;
+      }
+
       const result = await prisma.surveyResponse.create({
-        data: {
-          ville: surveyData.ville,
-          villeAutre: surveyData.villeAutre || null,
-          situationProfessionnelle: surveyData.situationProfessionnelle,
-          situationProfAutre: surveyData.situationProfAutre || null,
-          mangeExterieurFreq: surveyData.mangeExterieurFreq,
-          tempsPreparationRepas: surveyData.tempsPreparationRepas,
-          typesRepas: typesRepasString,
-          typesRepasAutre: surveyData.typesRepasAutre || null,
-          defisAlimentation: defisAlimentationString,
-          defisAlimentationAutre: surveyData.defisAlimentationAutre || null,
-          satisfactionAccesRepas: parseInt(surveyData.satisfactionAccesRepas, 10),
-          interetSolutionRepas: surveyData.interetSolutionRepas,
-          aspectsImportants: aspectsImportantsString,
-          aspectsImportantsAutre: surveyData.aspectsImportantsAutre || null,
-          budgetJournalierRepas: surveyData.budgetJournalierRepas,
-          prixMaxRepas: surveyData.prixMaxRepas,
-          budgetMensuelAbo: surveyData.budgetMensuelAbo,
-          commentaires: surveyData.commentaires || null,
-          acceptePolitique: Boolean(surveyData.acceptePolitique),
-          ...(surveyData.email !== undefined ? { email: surveyData.email || null } : {}),
-          ...(surveyData.sexe !== undefined ? { sexe: surveyData.sexe || null } : {})
-        }
+        data: createData
       });
       
       return res.status(201).json({ 

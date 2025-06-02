@@ -2,12 +2,17 @@
 import React, { useState, useEffect, FormEvent, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import Link from 'next/link';
 import Question from './Question';
 import Button from './Button';
 import Input from './Input';
+import Modal from './Modal';
+import PolitiqueConfidentialiteContent from './PolitiqueConfidentialiteContent';
 
 // Définir la structure de l'état du formulaire
 interface FormData {
+  email: string;
+  sexe: string;
   ville: string;
   villeAutre?: string;
   situationProfessionnelle: string;
@@ -26,9 +31,12 @@ interface FormData {
   prixMaxRepas: string;
   budgetMensuelAbo: string;
   commentaires?: string;
+  acceptePolitique: boolean;
 }
 
 const initialFormData: FormData = {
+  email: '',
+  sexe: '',
   ville: '',
   situationProfessionnelle: '',
   mangeExterieurFreq: '',
@@ -41,6 +49,7 @@ const initialFormData: FormData = {
   budgetJournalierRepas: '',
   prixMaxRepas: '',
   budgetMensuelAbo: '',
+  acceptePolitique: false,
 };
 
 // Structure des sections du formulaire
@@ -49,7 +58,7 @@ const formSections = [
     id: 1,
     title: "Informations Personnelles",
     icon: "https://img.icons8.com/fluency/48/user-male-circle.png",
-    questions: ["ville", "situationProfessionnelle"]
+    questions: ["email", "sexe", "ville", "situationProfessionnelle"]
   },
   {
     id: 2,
@@ -80,6 +89,12 @@ const formSections = [
     title: "Commentaires",
     icon: "https://img.icons8.com/fluency/48/comments.png",
     questions: ["commentaires"]
+  },
+  {
+    id: 7,
+    title: "Confirmation",
+    icon: "https://img.icons8.com/fluency/48/checkmark.png",
+    questions: ["acceptePolitique"]
   }
 ];
 
@@ -91,6 +106,7 @@ const EnhancedSurveyForm = () => {
   const [currentSection, setCurrentSection] = useState<number>(1);
   const [progress, setProgress] = useState<number>(0);
   const [animateSection, setAnimateSection] = useState<boolean>(false);
+  const [isPolitiqueModalOpen, setIsPolitiqueModalOpen] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -163,8 +179,8 @@ const EnhancedSurveyForm = () => {
     setSuccessMessage(null);
 
     // Validation simple
-    if (!formData.ville || !formData.situationProfessionnelle || !formData.mangeExterieurFreq || !formData.tempsPreparationRepas || formData.typesRepas.length === 0 || formData.defisAlimentation.length === 0 || formData.satisfactionAccesRepas === null || !formData.interetSolutionRepas || formData.aspectsImportants.length === 0 || !formData.budgetJournalierRepas || !formData.prixMaxRepas || !formData.budgetMensuelAbo) {
-        setError("Veuillez répondre à toutes les questions obligatoires.");
+    if (!formData.ville || !formData.situationProfessionnelle || !formData.mangeExterieurFreq || !formData.tempsPreparationRepas || formData.typesRepas.length === 0 || formData.defisAlimentation.length === 0 || formData.satisfactionAccesRepas === null || !formData.interetSolutionRepas || formData.aspectsImportants.length === 0 || !formData.budgetJournalierRepas || !formData.prixMaxRepas || !formData.budgetMensuelAbo || !formData.acceptePolitique) {
+        setError("Veuillez répondre à toutes les questions obligatoires et accepter la politique de confidentialité.");
         setSubmitting(false);
         // Scroll to the first error or a general error message display area
         window.scrollTo(0,0);
@@ -226,6 +242,27 @@ const EnhancedSurveyForm = () => {
 
         {section.id === 1 && (
           <>
+            <Question
+              id="email"
+              title="Quelle est votre adresse e-mail ? (facultatif)"
+              type="email"
+              value={formData.email || ''}
+              onChange={handleQuestionChange}
+            />
+            
+            <Question
+              id="sexe"
+              title="Quel est votre sexe ?"
+              type="multiple-choice"
+              options={[
+                { value: 'Homme', label: 'Homme' },
+                { value: 'Femme', label: 'Femme' },
+              ]}
+              value={formData.sexe}
+              onChange={handleQuestionChange}
+              required
+            />
+            
             <Question
               id="ville"
               title="Dans quelle ville du Bénin habitez-vous ?"
@@ -512,6 +549,38 @@ const EnhancedSurveyForm = () => {
           </>
         )}
 
+        {section.id === 7 && (
+          <>
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold text-green-700 mb-4">Politique de confidentialité</h3>
+              <div className="flex items-start mt-2">
+                <input
+                  type="checkbox"
+                  id="acceptePolitique"
+                  name="acceptePolitique"
+                  checked={formData.acceptePolitique}
+                  onChange={(e) => handleChange('acceptePolitique', e.target.checked)}
+                  className="mt-1 mr-2 h-5 w-5 text-green-600 transition duration-150 ease-in-out"
+                />
+                <label htmlFor="acceptePolitique" className="ml-2 block text-sm leading-5 text-gray-700">
+                  J'ai lu et j'accepte la <button 
+                    type="button" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsPolitiqueModalOpen(true);
+                    }} 
+                    className="text-green-600 hover:text-green-800 underline">politique de confidentialité</button> concernant le traitement de mes données personnelles.
+                </label>
+              </div>
+              {!formData.acceptePolitique && error && (
+                <p className="mt-2 text-sm text-red-600">
+                  Vous devez accepter la politique de confidentialité pour soumettre le formulaire.
+                </p>
+              )}
+            </div>
+          </>
+        )}
+
         <div className="flex justify-between mt-8">
           {currentSection > 1 && (
             <Button 
@@ -621,6 +690,15 @@ const EnhancedSurveyForm = () => {
       <div className="space-y-10">
         {renderQuestions()}
       </div>
+
+      {/* Modal de Politique de confidentialité */}
+      <Modal 
+        isOpen={isPolitiqueModalOpen} 
+        onClose={() => setIsPolitiqueModalOpen(false)} 
+        title="Politique de confidentialité"
+      >
+        <PolitiqueConfidentialiteContent />
+      </Modal>
     </div>
   );
 };

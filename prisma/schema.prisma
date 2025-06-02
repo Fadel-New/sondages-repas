@@ -19,6 +19,8 @@ model Admin {
 model SurveyResponse {
   id                       Int      @id @default(autoincrement())
   createdAt                DateTime @default(now())
+  email                    String?
+  sexe                     String?
   ville                    String
   villeAutre               String?
   situationProfessionnelle String
@@ -37,4 +39,5 @@ model SurveyResponse {
   prixMaxRepas             String
   budgetMensuelAbo         String
   commentaires             String?
+  acceptePolitique         Boolean  @default(false)
 }
