@@ -347,6 +347,22 @@ const StatisticsPage = () => {
         text: 'Statistiques des réponses au sondage',
       },
     },
+    scales: {
+      x: {
+        ticks: {
+          font: {
+            size: 12
+          }
+        }
+      },
+      y: {
+        ticks: {
+          font: {
+            size: 12
+          }
+        }
+      }
+    }
   };
 
   const pieOptions = {
