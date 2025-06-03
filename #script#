@@ -5,3 +5,8 @@ cd /home/fadel/Workspaces/sondages-repas && npx prisma generate
 cd /home/fadel/Workspaces/sondages-repas && node scripts/test-db-connection.js
 cd /home/fadel/Workspaces/sondages-repas && npm run build
 cd /home/fadel/Workspaces/sondages-repas && npm run build -- --debug
+ls -la /home/fadel/Workspaces/sondages-repas/.env*
+find /home/fadel/Workspaces/sondages-repas -name '.env*' -type f
+file /home/fadel/Workspaces/sondages-repas/public/images/repas.jpeg
+cd /home/fadel/Workspaces/sondages-repas && npm install --save-dev sharp
+cd /home/fadel/Workspaces/sondages-repas && node scripts/optimize-social-image.js

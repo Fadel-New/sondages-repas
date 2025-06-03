@@ -1,6 +1,17 @@
 // admin/dashboard.tsx
-import React, { useEffect, useState } from 'react';
-import Head from 'next/head';
+import React, { useEffect, useState } from 'r  const handleLogout = async () => {
+    try {
+        await fetch('/api/logout', { method: 'POST' });
+        router.push('/admin/login');
+    } catch (err) {
+        console.error("Failed to logout", err);
+        setError("Déconnexion échouée.");
+    }
+  };
+  
+  const handleCheckSocialPreview = () => {
+    window.open('/preview-sharing', '_blank');
+  };port Head from 'next/head';
 import { useRouter } from 'next/router';
 import { SurveyResponse } from '../types'; // Using our custom type
 import Button from '../components/ui/Button';
@@ -105,6 +116,9 @@ const AdminDashboardPage = () => {
                 </Button>
                 <Button onClick={handleExportCsv} variant="primary">
                   Exporter CSV
+                </Button>
+                <Button onClick={handleCheckSocialPreview} variant="primary">
+                  Prévisualisation Partage
                 </Button>
                 <Button onClick={handleLogout} variant="secondary">
                   Déconnexion
