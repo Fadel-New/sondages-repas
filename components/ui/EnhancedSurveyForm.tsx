@@ -444,7 +444,7 @@ const EnhancedSurveyForm = () => {
                   min="1" 
                   max="5" 
                   step="1"
-                  value={formData.satisfactionAccesRepas || 3}
+                  value={formData.satisfactionAccesRepas || 1}
                   onChange={(e) => handleChange('satisfactionAccesRepas' as keyof FormData, parseInt(e.target.value))}
                   className="rating-input"
                 />

@@ -3,3 +3,5 @@ cd /home/fadel/Workspaces/sondages-repas && npm run build
 cd /home/fadel/Workspaces/sondages-repas && npx prisma validate
 cd /home/fadel/Workspaces/sondages-repas && npx prisma generate
 cd /home/fadel/Workspaces/sondages-repas && node scripts/test-db-connection.js
+cd /home/fadel/Workspaces/sondages-repas && npm run build
+cd /home/fadel/Workspaces/sondages-repas && npm run build -- --debug
