@@ -90,12 +90,12 @@ const formSections = [
     icon: "https://img.icons8.com/fluency/48/comments.png",
     questions: ["commentaires"]
   },
-  {
-    id: 7,
-    title: "Confirmation",
-    icon: "https://img.icons8.com/fluency/48/checkmark.png",
-    questions: ["acceptePolitique"]
-  }
+  // {
+  //   id: 7,
+  //   title: "Confirmation",
+  //   icon: "https://img.icons8.com/fluency/48/checkmark.png",
+  //   questions: ["acceptePolitique"]
+  // }
 ];
 
 const EnhancedSurveyForm = () => {
@@ -179,7 +179,12 @@ const EnhancedSurveyForm = () => {
     setSuccessMessage(null);
 
     // Validation simple
-    if (!formData.ville || !formData.situationProfessionnelle || !formData.mangeExterieurFreq || !formData.tempsPreparationRepas || formData.typesRepas.length === 0 || formData.defisAlimentation.length === 0 || formData.satisfactionAccesRepas === null || !formData.interetSolutionRepas || formData.aspectsImportants.length === 0 || !formData.budgetJournalierRepas || !formData.prixMaxRepas || !formData.budgetMensuelAbo || !formData.acceptePolitique) {
+    if (!formData.ville || !formData.situationProfessionnelle || !formData.mangeExterieurFreq || 
+        !formData.tempsPreparationRepas || formData.typesRepas.length === 0 || 
+        formData.defisAlimentation.length === 0 || formData.satisfactionAccesRepas === null || 
+        !formData.interetSolutionRepas || formData.aspectsImportants.length === 0 || 
+        !formData.budgetJournalierRepas || !formData.prixMaxRepas || !formData.budgetMensuelAbo || 
+        !formData.acceptePolitique) {
         setError("Veuillez répondre à toutes les questions obligatoires et accepter la politique de confidentialité.");
         setSubmitting(false);
         // Scroll to the first error or a general error message display area
@@ -187,17 +192,33 @@ const EnhancedSurveyForm = () => {
         return;
     }
 
+    // Préparer les données à envoyer - assurez-vous que les champs facultatifs sont explicitement définis
+    const dataToSend = {
+      ...formData,
+      // Assurez-vous que les champs optionnels ont des valeurs correctes
+      email: formData.email || null,
+      sexe: formData.sexe || null,
+      commentaires: formData.commentaires || null,
+      villeAutre: formData.villeAutre || null,
+      situationProfAutre: formData.situationProfAutre || null,
+      typesRepasAutre: formData.typesRepasAutre || null,
+      defisAlimentationAutre: formData.defisAlimentationAutre || null,
+      aspectsImportantsAutre: formData.aspectsImportantsAutre || null
+    };
+
     try {
+      console.log('Envoi des données du formulaire...');
+      
       // Utilise l'API directe à la place de l'API Prisma
       const response = await fetch('/api/submit-survey-direct', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Une erreur est survenue.');
+        throw new Error(errorData.details || errorData.message || 'Une erreur est survenue.');
       }
 
       setSuccessMessage('Merci pour votre participation ! Votre réponse a été enregistrée.');
@@ -205,8 +226,9 @@ const EnhancedSurveyForm = () => {
       window.scrollTo(0,0);
       setCurrentSection(1); // Retour à la première section
     } catch (err: unknown) {
+      console.error('Erreur de soumission:', err);
       const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue';
-      setError(errorMessage);
+      setError(`Erreur lors de l'enregistrement de votre réponse: ${errorMessage}`);
       window.scrollTo(0,0);
     } finally {
       setSubmitting(false);
@@ -221,8 +243,9 @@ const EnhancedSurveyForm = () => {
     return section.questions.every(q => {
       const field = q as keyof FormData;
       const value = formData[field];
+      // Champs facultatifs
+      if (field === 'commentaires' || field === 'email') return true;
       if (Array.isArray(value)) return value.length > 0;
-      if (field === 'commentaires') return true; // Commentaires facultatifs
       if (typeof value === 'string') return value.trim() !== '';
       if (typeof value === 'number') return true;
       return false;
@@ -546,11 +569,7 @@ const EnhancedSurveyForm = () => {
               value={formData.commentaires || ''}
               onChange={handleQuestionChange}
             />
-          </>
-        )}
 
-        {section.id === 7 && (
-          <>
             <div className="mb-6">
               <h3 className="text-xl font-semibold text-green-700 mb-4">Politique de confidentialité</h3>
               <div className="flex items-start mt-2">
@@ -581,6 +600,7 @@ const EnhancedSurveyForm = () => {
           </>
         )}
 
+  
         <div className="flex justify-between mt-8">
           {currentSection > 1 && (
             <Button 

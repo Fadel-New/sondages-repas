@@ -148,15 +148,22 @@ const Question: React.FC<QuestionProps> = ({
       )}
       
       {type === 'email' && (
-        <Input
-          type="email"
-          name={id}
-          value={value || ''}
-          onChange={(e) => onChange(id, e.target.value)}
-          placeholder="exemple@domaine.com"
-          required={required}
-          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-        />
+        <div>
+          <Input
+            type="email"
+            name={id}
+            value={value || ''}
+            onChange={(e) => onChange(id, e.target.value)}
+            placeholder="exemple@domaine.com"
+            required={required}
+            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+          />
+          {!required && (
+            <p className="text-sm text-gray-500 mt-1 italic">
+              Ce champ est facultatif
+            </p>
+          )}
+        </div>
       )}
     </div>
   );

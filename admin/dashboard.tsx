@@ -95,68 +95,109 @@ const AdminDashboardPage = () => {
       </Head>
       <div className="min-h-screen bg-gray-100">
         <header className="bg-gray-800 text-white shadow-lg">
-          <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 className="text-2xl font-bold">Tableau de Bord Administrateur</h1>
-            <div className="flex items-center">
-              {adminUser && <span className="mr-4">Connecté: {adminUser.username}</span>}
-              <Button onClick={() => router.push('/admin/statistics')} variant="primary" className="mr-3">
-                Voir les statistiques
-              </Button>
-              <Button onClick={handleExportCsv} variant="primary" className="mr-3">
-                Exporter en CSV
-              </Button>
-              <Button onClick={handleLogout} variant="secondary">
-                Déconnexion
-              </Button>
+          <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center">
+            <h1 className="text-2xl font-bold mb-4 sm:mb-0">Tableau de Bord Administrateur</h1>
+            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0">
+              {adminUser && <span className="mb-2 sm:mr-4 sm:mb-0 text-center">Connecté: {adminUser.username}</span>}
+              <div className="flex flex-wrap justify-center gap-2">
+                <Button onClick={() => router.push('/admin/statistics')} variant="primary">
+                  Statistiques
+                </Button>
+                <Button onClick={handleExportCsv} variant="primary">
+                  Exporter CSV
+                </Button>
+                <Button onClick={handleLogout} variant="secondary">
+                  Déconnexion
+                </Button>
+              </div>
             </div>
           </div>
         </header>
 
-        <main className="container mx-auto px-6 py-8">
-          <h2 className="text-3xl font-semibold text-gray-700 mb-6">Réponses au Sondage ({responses.length})</h2>
+        <main className="container mx-auto px-4 sm:px-6 py-8">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-gray-700 mb-6 text-center sm:text-left">Réponses au Sondage ({responses.length})</h2>
 
           {responses.length === 0 && !loading ? (
             <p className="text-gray-600 text-lg text-center py-10">Aucune réponse pour le moment.</p>
           ) : (
             <div className="bg-white shadow-xl rounded-lg overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-200">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Ville</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Situation Pro.</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Mange Ext.</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Intérêt Solution</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Budget Jour.</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Commentaires</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {responses.map((res) => (
-                    <tr key={res.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{res.id}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(res.createdAt).toLocaleDateString('fr-FR')}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{res.ville}{res.villeAutre ? ` (${res.villeAutre})` : ''}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{res.situationProfessionnelle}{res.situationProfAutre ? ` (${res.situationProfAutre})` : ''}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{res.mangeExterieurFreq}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{res.interetSolutionRepas}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{res.budgetJournalierRepas}</td>
-                      <td className="px-6 py-4 text-sm text-gray-800 max-w-xs truncate" title={res.commentaires || ''}>{res.commentaires || '-'}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                        <Button 
-                          variant="primary" 
-                          size="small" 
-                          onClick={() => router.push(`/admin/response/${res.id}`)}
-                        >
-                          Voir détails
-                        </Button>
-                      </td>
+              {/* Version pour desktop */}
+              <div className="hidden md:block">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-200">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Date</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Ville</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Situation Pro.</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Mange Ext.</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Intérêt Solution</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Budget Jour.</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {responses.map((res) => (
+                      <tr key={res.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{res.id}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{new Date(res.createdAt).toLocaleDateString('fr-FR')}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{res.ville}{res.villeAutre ? ` (${res.villeAutre})` : ''}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{res.situationProfessionnelle}{res.situationProfAutre ? ` (${res.situationProfAutre})` : ''}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{res.mangeExterieurFreq}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{res.interetSolutionRepas}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{res.budgetJournalierRepas}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-right">
+                          <Button 
+                            variant="primary" 
+                            size="small" 
+                            onClick={() => router.push(`/admin/response/${res.id}`)}
+                          >
+                            Détails
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Version pour mobile */}
+              <div className="md:hidden">
+                {responses.map((res) => (
+                  <div key={res.id} className="p-4 border-b border-gray-200 hover:bg-gray-50">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold">ID: {res.id}</span>
+                      <span className="text-sm text-gray-500">{new Date(res.createdAt).toLocaleDateString('fr-FR')}</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-1 mb-2">
+                      <div>
+                        <span className="text-xs text-gray-500">Ville:</span>
+                        <p className="text-sm">{res.ville}{res.villeAutre ? ` (${res.villeAutre})` : ''}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-gray-500">Situation:</span>
+                        <p className="text-sm truncate">{res.situationProfessionnelle}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-gray-500">Mange Ext:</span>
+                        <p className="text-sm">{res.mangeExterieurFreq}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-gray-500">Intérêt:</span>
+                        <p className="text-sm">{res.interetSolutionRepas}</p>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="primary" 
+                      size="small" 
+                      className="w-full text-center mt-2"
+                      onClick={() => router.push(`/admin/response/${res.id}`)}
+                    >
+                      Voir détails
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </main>

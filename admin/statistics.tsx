@@ -384,79 +384,194 @@ const StatisticsPage = () => {
       </Head>
       <div className="min-h-screen bg-gray-100">
         <header className="bg-gray-800 text-white shadow-lg">
-          <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 className="text-2xl font-bold">Statistiques des Sondages</h1>
-            <div className="flex items-center">
-              {adminUser && <span className="mr-4">Connecté: {adminUser.username}</span>}
-              <Button onClick={() => router.push('/admin/dashboard')} variant="primary" className="mr-3">
-                Tableau de bord
-              </Button>
-              <Button onClick={handleLogout} variant="secondary">
-                Déconnexion
-              </Button>
+          <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center">
+            <h1 className="text-2xl font-bold mb-4 sm:mb-0">Statistiques des Sondages</h1>
+            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0">
+              {adminUser && <span className="mb-2 sm:mr-4 sm:mb-0 text-center">Connecté: {adminUser.username}</span>}
+              <div className="flex flex-wrap justify-center gap-2">
+                <Button onClick={() => router.push('/admin/dashboard')} variant="primary">
+                  Tableau de bord
+                </Button>
+                <Button onClick={handleLogout} variant="secondary">
+                  Déconnexion
+                </Button>
+              </div>
             </div>
           </div>
         </header>
 
-        <main className="container mx-auto px-6 py-8">
-          <h2 className="text-3xl font-semibold text-gray-700 mb-6">Analyse des {responses.length} réponses</h2>
+        <main className="container mx-auto px-4 sm:px-6 py-8">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-gray-700 mb-6 text-center sm:text-left">Analyse des {responses.length} réponses</h2>
 
           {responses.length === 0 ? (
             <p className="text-gray-600 text-lg text-center py-10">Aucune réponse pour le moment.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-white shadow-xl rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-4 text-gray-700">Répartition par ville</h3>
-                <div className="h-72">
-                  <Pie data={processVillesData()} options={pieOptions} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
+              <div className="bg-white shadow-xl rounded-lg p-4 sm:p-6">
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-gray-700">Répartition par ville</h3>
+                <div className="h-60 sm:h-72">
+                  <Pie data={processVillesData()} options={{
+                    ...pieOptions,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      ...pieOptions.plugins,
+                      legend: {
+                        ...pieOptions.plugins?.legend,
+                        position: 'bottom',
+                        labels: {
+                          boxWidth: 12,
+                          font: {
+                            size: window?.innerWidth < 640 ? 10 : 12
+                          }
+                        }
+                      }
+                    }
+                  }} />
                 </div>
               </div>
 
-              <div className="bg-white shadow-xl rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-4 text-gray-700">Situation professionnelle</h3>
-                <div className="h-72">
-                  <Pie data={processSituationProData()} options={pieOptions} />
+              <div className="bg-white shadow-xl rounded-lg p-4 sm:p-6">
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-gray-700">Situation professionnelle</h3>
+                <div className="h-60 sm:h-72">
+                  <Pie data={processSituationProData()} options={{
+                    ...pieOptions,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      ...pieOptions.plugins,
+                      legend: {
+                        ...pieOptions.plugins?.legend,
+                        position: 'bottom',
+                        labels: {
+                          boxWidth: 12,
+                          font: {
+                            size: window?.innerWidth < 640 ? 10 : 12
+                          }
+                        }
+                      }
+                    }
+                  }} />
                 </div>
               </div>
 
-              <div className="bg-white shadow-xl rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-4 text-gray-700">Fréquence repas à l'extérieur</h3>
-                <Bar data={processMangeExterieurData()} options={options} />
-              </div>
-
-              <div className="bg-white shadow-xl rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-4 text-gray-700">Intérêt pour une solution de repas</h3>
-                <div className="h-72">
-                  <Doughnut data={processInteresSolutionData()} options={pieOptions} />
+              <div className="bg-white shadow-xl rounded-lg p-4 sm:p-6">
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-gray-700">Fréquence repas à l'extérieur</h3>
+                <div className="h-60 sm:h-72">
+                  <Bar data={processMangeExterieurData()} options={{
+                    ...options,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                      ...options.scales,
+                      x: {
+                        ...options.scales?.x,
+                        ticks: {
+                          font: {
+                            size: window?.innerWidth < 640 ? 8 : 12
+                          }
+                        }
+                      }
+                    }
+                  }} />
                 </div>
               </div>
 
-              <div className="bg-white shadow-xl rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-4 text-gray-700">Niveau de satisfaction</h3>
-                <Bar data={processSatisfactionData()} options={options} />
+              <div className="bg-white shadow-xl rounded-lg p-4 sm:p-6">
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-gray-700">Intérêt pour une solution de repas</h3>
+                <div className="h-60 sm:h-72">
+                  <Doughnut data={processInteresSolutionData()} options={{
+                    ...pieOptions,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      ...pieOptions.plugins,
+                      legend: {
+                        ...pieOptions.plugins?.legend,
+                        position: 'bottom',
+                        labels: {
+                          boxWidth: 12,
+                          font: {
+                            size: window?.innerWidth < 640 ? 10 : 12
+                          }
+                        }
+                      }
+                    }
+                  }} />
+                </div>
               </div>
 
-              <div className="bg-white shadow-xl rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-4 text-gray-700">Aspects importants</h3>
-                <Bar data={processAspectsImportantsData()} options={{...options, indexAxis: 'y' as const}} />
+              <div className="bg-white shadow-xl rounded-lg p-4 sm:p-6">
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-gray-700">Niveau de satisfaction</h3>
+                <div className="h-60 sm:h-72">
+                  <Bar data={processSatisfactionData()} options={{
+                    ...options,
+                    responsive: true,
+                    maintainAspectRatio: false
+                  }} />
+                </div>
               </div>
 
-              <div className="bg-white shadow-xl rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-4 text-gray-700">Défis alimentaires</h3>
-                <Bar data={processDefisData()} options={{...options, indexAxis: 'y' as const}} />
+              <div className="bg-white shadow-xl rounded-lg p-4 sm:p-6">
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-gray-700">Aspects importants</h3>
+                <div className="h-80 sm:h-96">
+                  <Bar data={processAspectsImportantsData()} options={{
+                    ...options,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y' as const,
+                    scales: {
+                      y: {
+                        ticks: {
+                          font: {
+                            size: window?.innerWidth < 640 ? 8 : 12
+                          }
+                        }
+                      }
+                    }
+                  }} />
+                </div>
               </div>
 
-              <div className="bg-white shadow-xl rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-4 text-gray-700">Budget journalier</h3>
-                <Bar data={processBudgetData()} options={options} />
+              <div className="bg-white shadow-xl rounded-lg p-4 sm:p-6">
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-gray-700">Défis alimentaires</h3>
+                <div className="h-80 sm:h-96">
+                  <Bar data={processDefisData()} options={{
+                    ...options,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y' as const,
+                    scales: {
+                      y: {
+                        ticks: {
+                          font: {
+                            size: window?.innerWidth < 640 ? 8 : 12
+                          }
+                        }
+                      }
+                    }
+                  }} />
+                </div>
+              </div>
+
+              <div className="bg-white shadow-xl rounded-lg p-4 sm:p-6">
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-gray-700">Budget journalier</h3>
+                <div className="h-60 sm:h-72">
+                  <Bar data={processBudgetData()} options={{
+                    ...options,
+                    responsive: true,
+                    maintainAspectRatio: false
+                  }} />
+                </div>
               </div>
             </div>
           )}
 
-          <div className="mt-8 text-center">
-            <p className="text-gray-500 text-sm">
-              Les graphiques ci-dessus sont générés à partir des réponses au sondage. 
-              Le nombre total de réponses analysées est de {responses.length}.
+          <div className="mt-8 text-center px-4">
+            <p className="text-gray-500 text-xs sm:text-sm">
+              Les graphiques ci-dessus sont générés à partir des {responses.length} réponses au sondage.
+              <br className="hidden sm:inline" />
+              Tournez votre appareil en mode paysage pour une meilleure visualisation sur mobile.
             </p>
           </div>
         </main>

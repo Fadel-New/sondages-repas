@@ -88,11 +88,11 @@ const ResponseDetail = ({ admin, responseId }: { admin: any, responseId: string 
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="p-8 bg-white shadow-lg rounded-lg">
-          <div className="flex items-center space-x-4">
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+        <div className="p-6 sm:p-8 bg-white shadow-lg rounded-lg w-full max-w-md">
+          <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 justify-center">
             <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-xl text-gray-600">Chargement des détails...</p>
+            <p className="text-lg sm:text-xl text-gray-600">Chargement des détails...</p>
           </div>
         </div>
       </div>
@@ -101,12 +101,12 @@ const ResponseDetail = ({ admin, responseId }: { admin: any, responseId: string 
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-red-50">
-        <div className="p-8 bg-white shadow-lg rounded-lg">
-          <p className="text-xl text-red-600">{error}</p>
+      <div className="min-h-screen flex items-center justify-center bg-red-50 px-4">
+        <div className="p-6 sm:p-8 bg-white shadow-lg rounded-lg w-full max-w-md">
+          <p className="text-base sm:text-xl text-red-600 text-center mb-4">{error}</p>
           <Button 
             variant="secondary" 
-            className="mt-4" 
+            className="w-full" 
             onClick={() => router.push('/admin/dashboard')}
           >
             Retour au tableau de bord
@@ -118,12 +118,12 @@ const ResponseDetail = ({ admin, responseId }: { admin: any, responseId: string 
 
   if (!response) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-yellow-50">
-        <div className="p-8 bg-white shadow-lg rounded-lg">
-          <p className="text-xl text-yellow-600">Aucune réponse trouvée avec l'ID: {responseId}</p>
+      <div className="min-h-screen flex items-center justify-center bg-yellow-50 px-4">
+        <div className="p-6 sm:p-8 bg-white shadow-lg rounded-lg w-full max-w-md">
+          <p className="text-base sm:text-xl text-yellow-600 text-center mb-4">Aucune réponse trouvée avec l'ID: {responseId}</p>
           <Button 
             variant="secondary" 
-            className="mt-4" 
+            className="w-full" 
             onClick={() => router.push('/admin/dashboard')}
           >
             Retour au tableau de bord
@@ -149,16 +149,16 @@ const ResponseDetail = ({ admin, responseId }: { admin: any, responseId: string 
       </Head>
       <div className="min-h-screen bg-gray-100">
         <header className="bg-gray-800 text-white shadow-lg">
-          <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 className="text-2xl font-bold">Détails de la réponse #{responseId}</h1>
-            <div>
-              <Link href="/admin/dashboard">
-                <Button variant="secondary" className="mr-3">
+          <div className="container mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center">
+            <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-0">Détails de la réponse #{responseId}</h1>
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+              <Link href="/admin/dashboard" className="w-full sm:w-auto">
+                <Button variant="secondary" className="w-full sm:w-auto sm:mr-2">
                   Retour au tableau de bord
                 </Button>
               </Link>
-              <Link href="/admin/statistics">
-                <Button variant="primary" className="mr-3">
+              <Link href="/admin/statistics" className="w-full sm:w-auto">
+                <Button variant="primary" className="w-full sm:w-auto">
                   Voir les statistiques
                 </Button>
               </Link>
@@ -166,44 +166,44 @@ const ResponseDetail = ({ admin, responseId }: { admin: any, responseId: string 
           </div>
         </header>
 
-        <main className="container mx-auto px-6 py-8">
+        <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
           <div className="bg-white shadow-xl rounded-lg overflow-hidden">
-            <div className="p-6 border-b border-gray-200 bg-green-50">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-semibold text-gray-700">Réponse #{response.id}</h2>
-                <span className="text-gray-500">{formattedDate}</span>
+            <div className="p-4 sm:p-6 border-b border-gray-200 bg-green-50">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                <h2 className="text-xl sm:text-2xl font-semibold text-gray-700">Réponse #{response.id}</h2>
+                <span className="text-sm sm:text-base text-gray-500 mt-2 sm:mt-0">{formattedDate}</span>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6">
               <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Informations personnelles</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4 border-b pb-2">Informations personnelles</h3>
                 <div className="space-y-3">
                   <div className="flex flex-col">
-                    <span className="text-sm text-gray-500">Ville</span>
-                    <span className="text-gray-800">{response.ville} {response.villeAutre ? `(${response.villeAutre})` : ''}</span>
+                    <span className="text-xs sm:text-sm text-gray-500">Ville</span>
+                    <span className="text-sm sm:text-base text-gray-800">{response.ville} {response.villeAutre ? `(${response.villeAutre})` : ''}</span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm text-gray-500">Situation professionnelle</span>
-                    <span className="text-gray-800">{response.situationProfessionnelle} {response.situationProfAutre ? `(${response.situationProfAutre})` : ''}</span>
+                    <span className="text-xs sm:text-sm text-gray-500">Situation professionnelle</span>
+                    <span className="text-sm sm:text-base text-gray-800">{response.situationProfessionnelle} {response.situationProfAutre ? `(${response.situationProfAutre})` : ''}</span>
                   </div>
                 </div>
               </div>
 
               <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Habitudes alimentaires</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4 border-b pb-2">Habitudes alimentaires</h3>
                 <div className="space-y-3">
                   <div className="flex flex-col">
-                    <span className="text-sm text-gray-500">Fréquence des repas à l'extérieur</span>
-                    <span className="text-gray-800">{response.mangeExterieurFreq}</span>
+                    <span className="text-xs sm:text-sm text-gray-500">Fréquence des repas à l'extérieur</span>
+                    <span className="text-sm sm:text-base text-gray-800">{response.mangeExterieurFreq}</span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm text-gray-500">Temps de préparation des repas</span>
-                    <span className="text-gray-800">{response.tempsPreparationRepas}</span>
+                    <span className="text-xs sm:text-sm text-gray-500">Temps de préparation des repas</span>
+                    <span className="text-sm sm:text-base text-gray-800">{response.tempsPreparationRepas}</span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm text-gray-500">Types de repas à l'extérieur</span>
-                    <span className="text-gray-800">
+                    <span className="text-xs sm:text-sm text-gray-500">Types de repas à l'extérieur</span>
+                    <span className="text-sm sm:text-base text-gray-800">
                       {response.typesRepas.join(', ')}
                       {response.typesRepasAutre ? ` (${response.typesRepasAutre})` : ''}
                     </span>
@@ -212,37 +212,37 @@ const ResponseDetail = ({ admin, responseId }: { admin: any, responseId: string 
               </div>
 
               <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Défis et besoins</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4 border-b pb-2">Défis et besoins</h3>
                 <div className="space-y-3">
                   <div className="flex flex-col">
-                    <span className="text-sm text-gray-500">Défis alimentaires</span>
-                    <span className="text-gray-800">
+                    <span className="text-xs sm:text-sm text-gray-500">Défis alimentaires</span>
+                    <span className="text-sm sm:text-base text-gray-800">
                       {response.defisAlimentation.join(', ')}
                       {response.defisAlimentationAutre ? ` (${response.defisAlimentationAutre})` : ''}
                     </span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm text-gray-500">Satisfaction accès aux repas (1-5)</span>
+                    <span className="text-xs sm:text-sm text-gray-500">Satisfaction accès aux repas (1-5)</span>
                     <div className="flex items-center">
                       <div className="w-full bg-gray-200 rounded-full h-2.5">
                         <div className="bg-green-600 h-2.5 rounded-full" style={{ width: `${response.satisfactionAccesRepas * 20}%` }}></div>
                       </div>
-                      <span className="ml-2 text-gray-800 font-medium">{response.satisfactionAccesRepas}</span>
+                      <span className="ml-2 text-sm sm:text-base text-gray-800 font-medium">{response.satisfactionAccesRepas}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Intérêt pour des solutions</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4 border-b pb-2">Intérêt pour des solutions</h3>
                 <div className="space-y-3">
                   <div className="flex flex-col">
-                    <span className="text-sm text-gray-500">Intérêt pour une solution de repas</span>
-                    <span className="text-gray-800">{response.interetSolutionRepas}</span>
+                    <span className="text-xs sm:text-sm text-gray-500">Intérêt pour une solution de repas</span>
+                    <span className="text-sm sm:text-base text-gray-800">{response.interetSolutionRepas}</span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm text-gray-500">Aspects importants</span>
-                    <span className="text-gray-800">
+                    <span className="text-xs sm:text-sm text-gray-500">Aspects importants</span>
+                    <span className="text-sm sm:text-base text-gray-800">
                       {response.aspectsImportants.join(', ')}
                       {response.aspectsImportantsAutre ? ` (${response.aspectsImportantsAutre})` : ''}
                     </span>
@@ -251,26 +251,26 @@ const ResponseDetail = ({ admin, responseId }: { admin: any, responseId: string 
               </div>
 
               <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Budget</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4 border-b pb-2">Budget</h3>
                 <div className="space-y-3">
                   <div className="flex flex-col">
-                    <span className="text-sm text-gray-500">Budget journalier</span>
-                    <span className="text-gray-800">{response.budgetJournalierRepas}</span>
+                    <span className="text-xs sm:text-sm text-gray-500">Budget journalier</span>
+                    <span className="text-sm sm:text-base text-gray-800">{response.budgetJournalierRepas}</span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm text-gray-500">Prix maximum par repas</span>
-                    <span className="text-gray-800">{response.prixMaxRepas}</span>
+                    <span className="text-xs sm:text-sm text-gray-500">Prix maximum par repas</span>
+                    <span className="text-sm sm:text-base text-gray-800">{response.prixMaxRepas}</span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm text-gray-500">Budget abonnement mensuel</span>
-                    <span className="text-gray-800">{response.budgetMensuelAbo}</span>
+                    <span className="text-xs sm:text-sm text-gray-500">Budget abonnement mensuel</span>
+                    <span className="text-sm sm:text-base text-gray-800">{response.budgetMensuelAbo}</span>
                   </div>
                 </div>
               </div>
 
               <div className="md:col-span-2 bg-gray-50 p-4 rounded-lg shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Commentaires</h3>
-                <p className="text-gray-700 whitespace-pre-wrap">{response.commentaires || 'Aucun commentaire'}</p>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4 border-b pb-2">Commentaires</h3>
+                <p className="text-sm sm:text-base text-gray-700 whitespace-pre-wrap">{response.commentaires || 'Aucun commentaire'}</p>
               </div>
             </div>
           </div>
