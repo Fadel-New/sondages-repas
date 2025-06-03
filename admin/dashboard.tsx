@@ -79,6 +79,14 @@ const AdminDashboardPage = () => {
   const handleCheckSocialPreview = () => {
     window.open('/preview-sharing', '_blank');
   };
+  
+  const handleDebugSocialSharing = () => {
+    window.open('/api/debug-social-meta', '_blank');
+  };
+  
+  const handleDebugImage = () => {
+    window.open('/debug-image', '_blank');
+  };
 
   const handleExportCsv = () => {
     window.location.href = '/api/export-csv-direct';
@@ -112,6 +120,12 @@ const AdminDashboardPage = () => {
                 </Button>
                 <Button onClick={handleCheckSocialPreview} variant="primary">
                   Prévisualisation Partage
+                </Button>
+                <Button onClick={handleDebugSocialSharing} variant="primary">
+                  Déboguer Partage
+                </Button>
+                <Button onClick={handleDebugImage} variant="primary">
+                  Tester Image
                 </Button>
                 <Button onClick={handleLogout} variant="secondary">
                   Déconnexion

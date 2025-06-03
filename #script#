@@ -10,3 +10,5 @@ find /home/fadel/Workspaces/sondages-repas -name '.env*' -type f
 file /home/fadel/Workspaces/sondages-repas/public/images/repas.jpeg
 cd /home/fadel/Workspaces/sondages-repas && npm install --save-dev sharp
 cd /home/fadel/Workspaces/sondages-repas && node scripts/optimize-social-image.js
+identify -format "%wx%h %[size] %[format]\n" /home/fadel/Workspaces/sondages-repas/public/images/repas-social.jpeg 2>/dev/null || echo "L'outil identify n'est pas disponible, installation d'ImageMagick requise"
+cd /home/fadel/Workspaces/sondages-repas && node scripts/optimize-social-image.js

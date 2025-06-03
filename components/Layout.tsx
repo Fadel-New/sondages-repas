@@ -15,9 +15,9 @@ const Layout = ({
   description = 'Participez à notre sondage sur les habitudes alimentaires pour contribuer au développement de solutions de repas pratiques et adaptées à vos besoins.',
   imageUrl = '/images/repas-social.jpeg'
 }: Props) => {
-  // Utilise l'environnement pour déterminer si nous sommes en développement ou en production
-  const isDev = process.env.NODE_ENV === 'development';
-  const domain = process.env.NEXT_PUBLIC_DOMAIN || (isDev ? 'http://localhost:3000' : 'https://sondages-repas.vercel.app');
+  // Utilisez une URL absolue fixe pour l'environnement de production
+  const domain = 'https://sondages-repas.vercel.app';
+  // Assurez-vous que l'URL de l'image est absolue
   const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${domain}${imageUrl}`;
 
   return (
@@ -34,19 +34,21 @@ const Layout = ({
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:image" content={fullImageUrl} />
+        <meta property="og:image:secure_url" content={fullImageUrl} />
         <meta property="og:url" content={domain} />
         <meta property="og:type" content="website" />
+        
+        {/* Meta tags spécifiques pour WhatsApp */}
+        <meta property="og:site_name" content="Sondage Repas Quotidiens" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Image représentant des repas sains et délicieux" />
         
         {/* Meta tags pour Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={fullImageUrl} />
-        
-        {/* Meta tags spécifiques pour WhatsApp */}
-        <meta property="og:site_name" content="Sondage Repas Quotidiens" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
       </Head>
       <main className="container mx-auto max-w-3xl w-full bg-white p-6 sm:p-10 rounded-xl shadow-2xl">
         {children}
