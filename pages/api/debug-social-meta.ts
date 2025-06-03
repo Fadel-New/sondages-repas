@@ -89,8 +89,26 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       <ol>
         <li>Essayez d'ouvrir directement l'URL de l'image dans votre navigateur: <a href="${imageUrl}" target="_blank">${imageUrl}</a></li>
         <li>Essayez de partager cette URL sur WhatsApp: <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(`${baseUrl}?v=${Date.now()}`)}" target="_blank" class="test-link">Partager sur WhatsApp</a></li>
-        <li>Vérifiez l'URL avec le validateur d'Open Graph: <a href="https://www.opengraph.xyz/url/${encodeURIComponent(baseUrl)}" target="_blank" class="test-link">Valider avec OpenGraph.xyz</a></li>
+        <li>Vérifiez l'URL avec le validateur Facebook: <a href="https://developers.facebook.com/tools/debug/?q=${encodeURIComponent(baseUrl)}" target="_blank" class="test-link">Validateur Facebook</a></li>
+        <li>Vérifiez l'URL avec le validateur Twitter: <a href="https://cards-dev.twitter.com/validator" target="_blank" class="test-link">Validateur Twitter</a></li>
       </ol>
+    </div>
+    
+    <div class="card">
+      <h2>Aperçu simulé sur WhatsApp</h2>
+      <div style="max-width: 400px; margin: 20px auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <div style="height: 200px; overflow: hidden;">
+          <img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" alt="Aperçu de l'image" />
+        </div>
+        <div style="padding: 12px; background-color: white;">
+          <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 4px;">${title}</div>
+          <div style="font-size: 14px; color: #666; line-height: 1.3; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
+            ${description}
+          </div>
+          <div style="font-size: 12px; color: #888;">${baseUrl.replace(/^https?:\/\//, '')}</div>
+        </div>
+      </div>
+      <p class="info" style="text-align: center;">Simulation approximative de l'aperçu WhatsApp</p>
     </div>
     
     <div class="card">

@@ -81,7 +81,18 @@ const AdminDashboardPage = () => {
   };
   
   const handleDebugSocialSharing = () => {
+    // Utilisez notre propre validateur pour déboguer les méta-données
     window.open('/api/debug-social-meta', '_blank');
+  };
+  
+  const handleCustomValidator = () => {
+    // Ouvre notre validateur HTML statique
+    window.open('/og-validator.html', '_blank');
+  };
+  
+  const handleCheckSocialImage = () => {
+    // Vérifier l'état de l'image sociale
+    window.open('/api/check-social-image', '_blank');
   };
   
   const handleDebugImage = () => {
@@ -123,6 +134,12 @@ const AdminDashboardPage = () => {
                 </Button>
                 <Button onClick={handleDebugSocialSharing} variant="primary">
                   Déboguer Partage
+                </Button>
+                <Button onClick={handleCustomValidator} variant="primary">
+                  Validateur OG
+                </Button>
+                <Button onClick={handleCheckSocialImage} variant="primary">
+                  Vérifier Image
                 </Button>
                 <Button onClick={handleDebugImage} variant="primary">
                   Tester Image

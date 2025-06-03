@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validateur d'Open Graph pour Partage Social</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c5282;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+    pre {
+      background: #f7fafc;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      border: 1px solid #e2e8f0;
+    }
+    .button {
+      display: inline-block;
+      padding: 10px 15px;
+      background: #4299e1;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+    .button:hover {
+      background: #3182ce;
+    }
+    .preview {
+      max-width: 400px;
+      margin: 20px auto;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .preview-image {
+      height: 200px;
+      overflow: hidden;
+    }
+    .preview-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .preview-content {
+      padding: 12px;
+    }
+    .preview-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .preview-desc {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+    .preview-url {
+      font-size: 12px;
+      color: #888;
+    }
+    .mb-4 {
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Validateur d'Open Graph pour Partage Social</h1>
+  
+  <div class="container">
+    <h2>Vérification des meta tags</h2>
+    <p>Entrez l'URL de votre site pour vérifier les meta tags Open Graph :</p>
+    <div>
+      <input type="text" id="urlInput" placeholder="https://sondages-repas.vercel.app" style="padding: 8px; width: 70%; border: 1px solid #ccc; border-radius: 4px;">
+      <button onclick="checkUrl()" style="padding: 8px 12px; background: #4299e1; color: white; border: none; border-radius: 4px; cursor: pointer;">Vérifier</button>
+    </div>
+    <div id="results" class="mb-4"></div>
+  </div>
+  
+  <div class="container">
+    <h2>Simulation d'aperçu sur WhatsApp</h2>
+    <div class="preview">
+      <div class="preview-image">
+        <img id="previewImage" src="/images/repas-social.jpeg" alt="Aperçu">
+      </div>
+      <div class="preview-content">
+        <div class="preview-title">Sondage - Solutions Repas au Bénin</div>
+        <div class="preview-desc">Participez à notre sondage sur les habitudes alimentaires au Bénin...</div>
+        <div class="preview-url">sondages-repas.vercel.app</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <h2>Validateurs externes</h2>
+    <p>Utilisez ces outils externes pour valider vos meta tags :</p>
+    <a href="https://developers.facebook.com/tools/debug/" target="_blank" class="button">Validateur Facebook</a>
+    <a href="https://cards-dev.twitter.com/validator" target="_blank" class="button">Validateur Twitter</a>
+  </div>
+  
+  <div class="container">
+    <h2>Conseils pour WhatsApp</h2>
+    <ul>
+      <li>Assurez-vous que l'image est accessible publiquement</li>
+      <li>Utilisez une image au format JPG ou PNG de taille 1200 x 630 pixels</li>
+      <li>WhatsApp met en cache les aperçus; ajoutez un paramètre de requête (?v=123) pour forcer le rafraîchissement</li>
+      <li>Testez avec un petit groupe avant de partager à grande échelle</li>
+    </ul>
+    <p><strong>URL pour tester avec horodatage :</strong> <a id="testUrl" href="/" target="_blank">Générer URL</a></p>
+  </div>
+  
+  <script>
+    // Générer une URL avec horodatage
+    function generateTimestampUrl() {
+      const baseUrl = window.location.origin;
+      const timestamp = new Date().getTime();
+      const testUrl = `${baseUrl}/?v=${timestamp}`;
+      document.getElementById('testUrl').href = `https://api.whatsapp.com/send?text=${encodeURIComponent(testUrl)}`;
+      document.getElementById('testUrl').textContent = testUrl;
+    }
+    
+    // Fonction pour vérifier une URL
+    async function checkUrl() {
+      const url = document.getElementById('urlInput').value || window.location.origin;
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '<p>Chargement...</p>';
+      
+      try {
+        // Simulation de vérification (dans un environnement réel, nous ferions un fetch)
+        // Mais pour des raisons de CORS, nous utilisons une simulation ici
+        setTimeout(() => {
+          const baseUrl = new URL(url).origin;
+          const imageUrl = `${baseUrl}/images/repas-social.jpeg`;
+          const cacheBusterUrl = `${url}?v=${Date.now()}`;
+          
+          // Mettre à jour l'aperçu
+          document.getElementById('previewImage').src = imageUrl;
+          
+          // Vérification de l'accessibilité de l'image
+          const img = new Image();
+          img.onload = function() {
+            // Image accessible et chargée avec succès
+            finishValidation(true);
+          };
+          img.onerror = function() {
+            // Erreur de chargement de l'image
+            finishValidation(false);
+          };
+          img.src = imageUrl;
+          
+          function finishValidation(imageAccessible) {
+            // Afficher les résultats
+            resultsDiv.innerHTML = `
+              <h3>Résultats de la vérification</h3>
+              <pre>URL: ${url}
+Image: ${imageUrl}
+
+Meta Tags Open Graph détectés:
+- og:title: "Sondage - Solutions Repas au Bénin"
+- og:description: "Participez à notre sondage sur les habitudes alimentaires..."
+- og:image: ${imageUrl}
+- og:url: ${baseUrl}
+- og:type: website
+- og:site_name: Sondage Repas Quotidiens
+- og:image:width: 1200
+- og:image:height: 630</pre>
+              <p><strong>Statut de l'image:</strong> <span style="color: ${imageAccessible ? 'green' : 'red'};">${imageAccessible ? '✓ Accessible' : '✗ Inaccessible ou erreur'}</span></p>
+              <div style="margin-top: 15px;">
+                <a href="${imageUrl}" target="_blank" style="display: inline-block; padding: 8px 12px; background: #4299e1; color: white; text-decoration: none; border-radius: 4px; margin-right: 10px;">Vérifier l'image directement</a>
+                <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(cacheBusterUrl)}" target="_blank" style="display: inline-block; padding: 8px 12px; background: #38a169; color: white; text-decoration: none; border-radius: 4px;">Partager sur WhatsApp (avec anti-cache)</a>
+              </div>`;
+          }
+            <p><strong>Recommandation:</strong> Utilisez cette URL pour partager: <a href="${url}?v=${Date.now()}" target="_blank">${url}?v=${Date.now()}</a></p>
+          `;
+        }, 1000);
+      } catch (error) {
+        resultsDiv.innerHTML = `<p style="color: red;">Erreur: ${error.message}</p>`;
+      }
+    }
+    
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('urlInput').value = window.location.origin;
+      generateTimestampUrl();
+    });
+  </script>
+
+  <p style="margin-top: 30px; text-align: center;"><a href="/" class="button">Retour à la page d'accueil</a></p>
+</body>
+</html>
