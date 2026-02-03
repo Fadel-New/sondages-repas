@@ -1,8 +1,6 @@
 // pages/api/submit-survey-direct.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../lib/db'; // Import the shared instance
-import fs from 'fs';
-import path from 'path';
 import { Prisma } from '@prisma/client';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -17,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const surveyData = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
 
     // Validation basique
-    if (!surveyData.ville || !surveyData.situationProfessionnelle || !surveyData.mangeExterieurFreq || 
+    if (!surveyData.whatsappNumber || !surveyData.mangeExterieurFreq || 
         !surveyData.tempsPreparationRepas || !surveyData.typesRepas || !surveyData.defisAlimentation || 
         !surveyData.interetSolutionRepas || !surveyData.aspectsImportants || 
         !surveyData.budgetJournalierRepas || !surveyData.prixMaxRepas || !surveyData.budgetMensuelAbo || 
@@ -40,10 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Préparer les données pour la création
     const createData: Prisma.SurveyResponseCreateInput = {
-      ville: surveyData.ville,
-      villeAutre: surveyData.villeAutre || null,
-      situationProfessionnelle: surveyData.situationProfessionnelle,
-      situationProfAutre: surveyData.situationProfAutre || null,
+      whatsappNumber: surveyData.whatsappNumber,
       mangeExterieurFreq: surveyData.mangeExterieurFreq,
       tempsPreparationRepas: surveyData.tempsPreparationRepas,
       typesRepas: typesRepasString,
@@ -60,21 +55,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       commentaires: surveyData.commentaires || null,
       acceptePolitique: Boolean(surveyData.acceptePolitique)
     };
-    
-    // Ajouter les champs facultatifs explicitement si présents
-    if (surveyData.email) {
-      createData.email = surveyData.email;
-    }
-    if (surveyData.sexe) {
-      createData.sexe = surveyData.sexe;
-    }
 
     try {
       console.log('Tentative de création de la réponse dans la base de données...');
       console.log('Données à enregistrer (createData):', JSON.stringify({
         ...createData,
         // Masquer les données sensibles pour le journal
-        email: createData.email ? '***@***' : undefined
+        whatsappNumber: createData.whatsappNumber ? `***${String(createData.whatsappNumber).slice(-4)}` : undefined
       }, null, 2));
       
       const result = await prisma.surveyResponse.create({

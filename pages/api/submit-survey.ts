@@ -12,8 +12,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const surveyData = req.body;
 
     // Validation basique (à améliorer en production)
-    if (!surveyData.ville || !surveyData.situationProfessionnelle) {
-      return res.status(400).json({ message: 'Champs obligatoires manquants.' });
+    if (!surveyData.whatsappNumber || !surveyData.mangeExterieurFreq || 
+        !surveyData.tempsPreparationRepas || !surveyData.typesRepas || !surveyData.defisAlimentation || 
+        !surveyData.interetSolutionRepas || !surveyData.aspectsImportants || 
+        !surveyData.budgetJournalierRepas || !surveyData.prixMaxRepas || !surveyData.budgetMensuelAbo || 
+        !surveyData.acceptePolitique) {
+      return res.status(400).json({ message: 'Champs obligatoires manquants ou politique de confidentialité non acceptée.' });
     }
 
     // Convertir les tableaux en chaînes de caractères séparées par des virgules
@@ -23,10 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     const newResponse = await prisma.surveyResponse.create({
       data: {
-        ville: surveyData.ville,
-        villeAutre: surveyData.villeAutre,
-        situationProfessionnelle: surveyData.situationProfessionnelle,
-        situationProfAutre: surveyData.situationProfAutre,
+        whatsappNumber: surveyData.whatsappNumber,
         mangeExterieurFreq: surveyData.mangeExterieurFreq,
         tempsPreparationRepas: surveyData.tempsPreparationRepas,
         typesRepas: typesRepasString,
@@ -41,6 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         prixMaxRepas: surveyData.prixMaxRepas,
         budgetMensuelAbo: surveyData.budgetMensuelAbo,
         commentaires: surveyData.commentaires,
+        acceptePolitique: Boolean(surveyData.acceptePolitique),
       },
     });
 

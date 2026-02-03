@@ -11,8 +11,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const imageUrl = `${baseUrl}/images/repas-social.jpeg`;
 
   // Titre et description
-  const title = "Sondage - Solutions Repas au Bénin";
-  const description = "Participez à notre sondage sur les habitudes alimentaires au Bénin pour contribuer au développement de solutions de repas pratiques, sains et abordables.";
+  const title = "Sondage Easy Meal - Ghana (Achimota)";
+  const description = "Participez au sondage Easy Meal destiné aux étudiants à Achimota (Accra) pour améliorer l'accès à des repas pratiques, sains et abordables.";
   
   // Générer une réponse pour déboguer les meta tags
   const debugInfo = {
@@ -25,7 +25,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       "og:image": imageUrl,
       "og:url": baseUrl,
       "og:type": "website",
-      "og:site_name": "Sondage Repas Quotidiens",
+      "og:site_name": "Easy Meal - Ghana",
       "og:image:width": "1200",
       "og:image:height": "630",
       "twitter:card": "summary_large_image",

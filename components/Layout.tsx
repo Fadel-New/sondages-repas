@@ -11,8 +11,8 @@ type Props = {
 
 const Layout = ({ 
   children, 
-  title = 'Sondage Repas Quotidiens',
-  description = 'Participez à notre sondage sur les habitudes alimentaires pour contribuer au développement de solutions de repas pratiques et adaptées à vos besoins.',
+  title = 'Sondage Easy Meal - Ghana',
+  description = 'Participez au sondage Easy Meal pour améliorer l\'accès à des repas pratiques, sains et abordables pour les étudiants à Achimota (Accra).',
   imageUrl = '/images/repas-social.jpeg'
 }: Props) => {
   // Utilisez une URL absolue fixe pour l'environnement de production
@@ -39,7 +39,7 @@ const Layout = ({
         <meta property="og:type" content="website" />
         
         {/* Meta tags spécifiques pour WhatsApp */}
-        <meta property="og:site_name" content="Sondage Repas Quotidiens" />
+        <meta property="og:site_name" content="Easy Meal - Ghana" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Image représentant des repas sains et délicieux" />
@@ -54,7 +54,7 @@ const Layout = ({
         {children}
       </main>
       <footer className="text-center text-white text-sm mt-8">
-        <p>&copy; {new Date().getFullYear()} Votre Entreprise. Tous droits réservés.</p>
+        <p>&copy; {new Date().getFullYear()} Easy Meal. Tous droits réservés.</p>
       </footer>
     </div>
   );

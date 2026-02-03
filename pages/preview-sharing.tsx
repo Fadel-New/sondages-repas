@@ -51,9 +51,9 @@ const PreviewSharingPage = () => {
                     />
                   </div>
                   <div className="w-full md:w-3/4">
-                    <h3 className="text-lg font-semibold text-gray-800">Sondage - Solutions Repas au Bénin</h3>
+                    <h3 className="text-lg font-semibold text-gray-800">Sondage Easy Meal - Ghana (Achimota)</h3>
                     <p className="text-gray-600 text-sm mt-1">
-                      Participez à notre sondage sur les habitudes alimentaires au Bénin pour contribuer au développement de solutions de repas pratiques, sains et abordables adaptées à vos besoins.
+                      Participez au sondage Easy Meal destiné aux étudiants à Achimota (Accra) pour améliorer l'accès à des repas pratiques, sains et abordables.
                     </p>
                     <p className="text-xs text-gray-500 mt-1">{siteUrl}</p>
                   </div>

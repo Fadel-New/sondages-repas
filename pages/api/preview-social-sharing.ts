@@ -153,20 +153,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     <img src="${imageUrl}" alt="Aperçu social">
                 </div>
                 <div class="preview-content">
-                    <div class="preview-title">Sondage - Solutions Repas au Bénin</div>
-                    <div class="preview-desc">Participez à notre sondage sur les habitudes alimentaires au Bénin...</div>
+                    <div class="preview-title">Sondage Easy Meal - Ghana (Achimota)</div>
+                    <div class="preview-desc">Participez au sondage Easy Meal destiné aux étudiants à Achimota (Accra)...</div>
                     <div class="preview-url">${new URL(url).hostname}</div>
                 </div>
             </div>
             
             <h3 style="margin-top: 30px;">Meta Tags Open Graph détectés</h3>
             <div class="meta-tags">
-                <div class="tag-item"><span class="tag-name">og:title:</span> Sondage - Solutions Repas au Bénin</div>
-                <div class="tag-item"><span class="tag-name">og:description:</span> Participez à notre sondage sur les habitudes alimentaires...</div>
+                <div class="tag-item"><span class="tag-name">og:title:</span> Sondage Easy Meal - Ghana (Achimota)</div>
+                <div class="tag-item"><span class="tag-name">og:description:</span> Participez au sondage Easy Meal destiné aux étudiants à Achimota (Accra)...</div>
                 <div class="tag-item"><span class="tag-name">og:image:</span> ${imageUrl}</div>
                 <div class="tag-item"><span class="tag-name">og:url:</span> ${url}</div>
                 <div class="tag-item"><span class="tag-name">og:type:</span> website</div>
-                <div class="tag-item"><span class="tag-name">og:site_name:</span> Sondage Repas Quotidiens</div>
+                <div class="tag-item"><span class="tag-name">og:site_name:</span> Easy Meal - Ghana</div>
                 <div class="tag-item"><span class="tag-name">og:image:width:</span> 1200</div>
                 <div class="tag-item"><span class="tag-name">og:image:height:</span> 630</div>
             </div>

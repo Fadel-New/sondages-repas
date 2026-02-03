@@ -19,12 +19,7 @@ model Admin {
 model SurveyResponse {
   id                       Int      @id @default(autoincrement())
   createdAt                DateTime @default(now())
-  email                    String?
-  sexe                     String?
-  ville                    String
-  villeAutre               String?
-  situationProfessionnelle String
-  situationProfAutre       String?
+  whatsappNumber           String
   mangeExterieurFreq       String
   tempsPreparationRepas    String
   typesRepas               String

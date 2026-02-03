@@ -1,8 +1,6 @@
 // components/ui/EnhancedSurveyForm.tsx
 import React, { useState, useEffect, FormEvent, useRef } from 'react';
-import { useRouter } from 'next/router';
 import Image from 'next/image';
-import Link from 'next/link';
 import Question from './Question';
 import Button from './Button';
 import Input from './Input';
@@ -11,12 +9,7 @@ import PolitiqueConfidentialiteContent from './PolitiqueConfidentialiteContent';
 
 // Définir la structure de l'état du formulaire
 interface FormData {
-  email: string;
-  sexe: string;
-  ville: string;
-  villeAutre?: string;
-  situationProfessionnelle: string;
-  situationProfAutre?: string;
+  whatsappNumber: string;
   mangeExterieurFreq: string;
   tempsPreparationRepas: string;
   typesRepas: string[];
@@ -35,10 +28,7 @@ interface FormData {
 }
 
 const initialFormData: FormData = {
-  email: '',
-  sexe: '',
-  ville: '',
-  situationProfessionnelle: '',
+  whatsappNumber: '',
   mangeExterieurFreq: '',
   tempsPreparationRepas: '',
   typesRepas: [],
@@ -56,9 +46,9 @@ const initialFormData: FormData = {
 const formSections = [
   {
     id: 1,
-    title: "Informations Personnelles",
+    title: "Contact & contexte",
     icon: "https://img.icons8.com/fluency/48/user-male-circle.png",
-    questions: ["email", "sexe", "ville", "situationProfessionnelle"]
+    questions: ["whatsappNumber"]
   },
   {
     id: 2,
@@ -68,19 +58,19 @@ const formSections = [
   },
   {
     id: 3,
-    title: "Vos besoins et défis",
+    title: "Vos besoins et défis à Achimota",
     icon: "https://img.icons8.com/fluency/48/goal.png",
     questions: ["defisAlimentation", "satisfactionAccesRepas"]
   },
   {
     id: 4,
-    title: "Vos intérêts pour de nouvelles solutions",
+    title: "Votre intérêt pour Easy Meal",
     icon: "https://img.icons8.com/fluency/48/idea.png",
     questions: ["interetSolutionRepas", "aspectsImportants"]
   },
   {
     id: 5,
-    title: "Votre budget",
+    title: "Votre budget (GHS)",
     icon: "https://img.icons8.com/fluency/48/money.png",
     questions: ["budgetJournalierRepas", "prixMaxRepas", "budgetMensuelAbo"]
   },
@@ -108,7 +98,6 @@ const EnhancedSurveyForm = () => {
   const [animateSection, setAnimateSection] = useState<boolean>(false);
   const [isPolitiqueModalOpen, setIsPolitiqueModalOpen] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
 
   // Calculer la progression du formulaire
   useEffect(() => {
@@ -138,6 +127,7 @@ const EnhancedSurveyForm = () => {
       if (Array.isArray(value) && value.length > 0) filledFields++;
       else if (typeof value === 'string' && value.trim() !== '') filledFields++;
       else if (typeof value === 'number') filledFields++;
+      else if (typeof value === 'boolean' && value) filledFields++;
     });
     
     setProgress(Math.round((filledFields / totalFields) * 100));
@@ -179,7 +169,7 @@ const EnhancedSurveyForm = () => {
     setSuccessMessage(null);
 
     // Validation simple
-    if (!formData.ville || !formData.situationProfessionnelle || !formData.mangeExterieurFreq || 
+    if (!formData.whatsappNumber || !formData.mangeExterieurFreq || 
         !formData.tempsPreparationRepas || formData.typesRepas.length === 0 || 
         formData.defisAlimentation.length === 0 || formData.satisfactionAccesRepas === null || 
         !formData.interetSolutionRepas || formData.aspectsImportants.length === 0 || 
@@ -196,11 +186,7 @@ const EnhancedSurveyForm = () => {
     const dataToSend = {
       ...formData,
       // Assurez-vous que les champs optionnels ont des valeurs correctes
-      email: formData.email || null,
-      sexe: formData.sexe || null,
       commentaires: formData.commentaires || null,
-      villeAutre: formData.villeAutre || null,
-      situationProfAutre: formData.situationProfAutre || null,
       typesRepasAutre: formData.typesRepasAutre || null,
       defisAlimentationAutre: formData.defisAlimentationAutre || null,
       aspectsImportantsAutre: formData.aspectsImportantsAutre || null
@@ -244,7 +230,7 @@ const EnhancedSurveyForm = () => {
       const field = q as keyof FormData;
       const value = formData[field];
       // Champs facultatifs
-      if (field === 'commentaires' || field === 'email') return true;
+      if (field === 'commentaires') return true;
       if (Array.isArray(value)) return value.length > 0;
       if (typeof value === 'string') return value.trim() !== '';
       if (typeof value === 'number') return true;
@@ -266,80 +252,16 @@ const EnhancedSurveyForm = () => {
         {section.id === 1 && (
           <>
             <Question
-              id="email"
-              title="Quelle est votre adresse e-mail ? (facultatif)"
-              type="email"
-              value={formData.email || ''}
-              onChange={handleQuestionChange}
-            />
-            
-            <Question
-              id="sexe"
-              title="Quel est votre sexe ?"
-              type="multiple-choice"
-              options={[
-                { value: 'Homme', label: 'Homme' },
-                { value: 'Femme', label: 'Femme' },
-              ]}
-              value={formData.sexe}
+              id="whatsappNumber"
+              title="Quel est votre numéro WhatsApp ?"
+              type="text"
+              inputType="tel"
+              placeholder="+233 50 123 4567"
+              helperText="Format recommandé : +233 XX XXX XXXX"
+              value={formData.whatsappNumber}
               onChange={handleQuestionChange}
               required
             />
-            
-            <Question
-              id="ville"
-              title="Dans quelle ville du Bénin habitez-vous ?"
-              type="multiple-choice"
-              options={[
-                { value: 'Cotonou', label: 'Cotonou' },
-                { value: 'Porto-Novo', label: 'Porto-Novo' },
-                { value: 'Abomey-Calavi', label: 'Abomey-Calavi' },
-                { value: 'Parakou', label: 'Parakou' },
-                { value: 'Djougou', label: 'Djougou' },
-                { value: 'Bohicon', label: 'Bohicon' },
-                { value: 'Natitingou', label: 'Natitingou' },
-                { value: 'Ouidah', label: 'Ouidah' },
-                { value: 'Autre', label: 'Autre' }
-              ]}
-              value={formData.ville}
-              onChange={handleQuestionChange}
-              required
-            />
-            {formData.ville === 'Autre' && (
-              <Input
-                id="villeAutre"
-                placeholder="Précisez votre ville"
-                value={formData.villeAutre || ''}
-                onChange={(e) => handleChange('villeAutre' as keyof FormData, e.target.value)}
-                className="mt-2 ml-8"
-              />
-            )}
-
-            <Question
-              id="situationProfessionnelle"
-              title="Quelle est votre situation professionnelle actuelle ?"
-              type="multiple-choice"
-              options={[
-                { value: 'Salarié(e)', label: 'Salarié(e)' },
-                { value: 'Étudiant(e)', label: 'Étudiant(e)' },
-                { value: 'Entrepreneur', label: 'Entrepreneur / Travailleur indépendant' },
-                { value: 'Sans emploi', label: 'Sans emploi' },
-                { value: 'Retraité(e)', label: 'Retraité(e)' },
-                { value: 'Autre', label: 'Autre' }
-              ]}
-              value={formData.situationProfessionnelle}
-              onChange={handleQuestionChange}
-              required
-            />
-            {formData.situationProfessionnelle === 'Autre' && (
-              <Input
-                id="situationProfAutre"
-                placeholder="Précisez votre situation"
-                value={formData.situationProfAutre || ''}
-                onChange={(e) => handleChange('situationProfAutre' as keyof FormData, e.target.value)}
-                className="mt-2 ml-8"
-              />
-            )}
           </>
         )}
 
@@ -347,14 +269,14 @@ const EnhancedSurveyForm = () => {
           <>
             <Question
               id="mangeExterieurFreq"
-              title="À quelle fréquence mangez-vous à l'extérieur de chez vous ?"
+              title="À quelle fréquence mangez-vous à l'extérieur (chop bar, fast-food, cantine) ?"
               type="multiple-choice"
               options={[
                 { value: 'Tous les jours', label: 'Tous les jours' },
-                { value: '3-4 fois par semaine', label: '3-4 fois par semaine' },
-                { value: '1-2 fois par semaine', label: '1-2 fois par semaine' },
-                { value: 'Quelques fois par mois', label: 'Quelques fois par mois' },
-                { value: 'Rarement ou jamais', label: 'Rarement ou jamais' }
+                { value: '4-5 fois par semaine', label: '4-5 fois par semaine' },
+                { value: '2-3 fois par semaine', label: '2-3 fois par semaine' },
+                { value: '1 fois par semaine', label: '1 fois par semaine' },
+                { value: 'Rarement', label: 'Rarement' }
               ]}
               value={formData.mangeExterieurFreq}
               onChange={handleQuestionChange}
@@ -363,7 +285,7 @@ const EnhancedSurveyForm = () => {
 
             <Question
               id="tempsPreparationRepas"
-              title="Combien de temps passez-vous en moyenne à préparer vos repas quotidiens ?"
+              title="Combien de temps passez-vous en moyenne à préparer vos repas (courses + cuisine) ?"
               type="multiple-choice"
               options={[
                 { value: 'Moins de 15 minutes', label: 'Moins de 15 minutes' },
@@ -408,14 +330,16 @@ const EnhancedSurveyForm = () => {
           <>
             <Question
               id="defisAlimentation"
-              title="Quels sont les principaux défis que vous rencontrez concernant votre alimentation quotidienne ?"
+              title="Quels sont les principaux défis que vous rencontrez concernant votre alimentation à Achimota (Accra) ?"
               type="checkbox"
               options={[
+                { value: 'Prix élevés des repas à Achimota', label: 'Prix élevés des repas à Achimota' },
                 { value: 'Manque de temps pour cuisiner', label: 'Manque de temps pour cuisiner' },
-                { value: 'Coût élevé des repas extérieurs', label: 'Coût élevé des repas extérieurs' },
-                { value: 'Difficulté à trouver des options saines', label: 'Difficulté à trouver des options saines' },
-                { value: 'Manque de variété', label: 'Manque de variété dans les options disponibles' },
-                { value: 'Contraintes diététiques', label: 'Contraintes diététiques ou allergies' },
+                { value: 'Pas de cuisine/équipement au hostel', label: 'Pas de cuisine/équipement au hostel' },
+                { value: 'Hygiène incertaine des street-food/chop bars', label: 'Hygiène incertaine des street-food/chop bars' },
+                { value: 'Difficulté à trouver des plats familiers (francophones)', label: 'Difficulté à trouver des plats familiers (francophones)' },
+                { value: 'Manque de variété ou d\'options saines', label: 'Manque de variété ou d\'options saines' },
+                { value: 'Contraintes diététiques/allergies', label: 'Contraintes diététiques/allergies' },
                 { value: 'Autre', label: 'Autre' }
               ]}
               value={formData.defisAlimentation}
@@ -433,7 +357,7 @@ const EnhancedSurveyForm = () => {
             )}
 
             <div className="question-container">
-              <h3 className="question-title">Sur une échelle de 1 à 5, quel est votre niveau de satisfaction concernant l'accès à des repas qui correspondent à vos besoins ?</h3>
+              <h3 className="question-title">Sur une échelle de 1 à 5, quel est votre niveau de satisfaction concernant l'accès à des repas sains et familiers à Achimota (Accra) ?</h3>
               <div className="rating-scale">
                 <div className="rating-labels">
                   <span>Pas du tout satisfait</span>
@@ -464,7 +388,7 @@ const EnhancedSurveyForm = () => {
           <>
             <Question
               id="interetSolutionRepas"
-              title="Seriez-vous intéressé(e) par un service qui propose des repas préparés, sains et abordables à emporter ou à livrer ?"
+              title="Seriez-vous intéressé(e) par un abonnement Easy Meal (repas chauds livrés du lundi au vendredi à Achimota ou à votre hostel) ?"
               type="multiple-choice"
               options={[
                 { value: 'Très intéressé(e)', label: 'Très intéressé(e)' },
@@ -483,13 +407,15 @@ const EnhancedSurveyForm = () => {
               title="Quels aspects seraient les plus importants pour vous dans ce type de service ?"
               type="checkbox"
               options={[
-                { value: 'Qualité des ingrédients', label: 'Qualité des ingrédients' },
                 { value: 'Prix abordable', label: 'Prix abordable' },
+                { value: 'Prix stable via abonnement', label: 'Prix stable via abonnement' },
+                { value: 'Qualité / hygiène', label: 'Qualité / hygiène' },
+                { value: 'Plats familiers (francophones)', label: 'Plats familiers (francophones)' },
+                { value: 'Livraison sur campus/hostel', label: 'Livraison sur campus/hostel' },
+                { value: 'Portions copieuses', label: 'Portions copieuses' },
                 { value: 'Variété des menus', label: 'Variété des menus' },
-                { value: 'Rapidité du service', label: 'Rapidité du service' },
                 { value: 'Options diététiques', label: 'Options diététiques spécifiques' },
-                { value: 'Emballage écologique', label: 'Emballage écologique' },
-                { value: 'Possibilité de commander à l\'avance', label: 'Possibilité de commander à l\'avance' },
+                { value: 'Ponctualité du service', label: 'Ponctualité du service' },
                 { value: 'Autre', label: 'Autre' }
               ]}
               value={formData.aspectsImportants}
@@ -512,14 +438,14 @@ const EnhancedSurveyForm = () => {
           <>
             <Question
               id="budgetJournalierRepas"
-              title="Quel est votre budget journalier pour vos repas extérieurs ?"
+              title="Quel est votre budget journalier pour vos repas extérieurs (GHS) ?"
               type="multiple-choice"
               options={[
-                { value: 'Moins de 1 000 FCFA', label: 'Moins de 1 000 FCFA' },
-                { value: '1 000 - 2 000 FCFA', label: '1 000 - 2 000 FCFA' },
-                { value: '2 000 - 3 000 FCFA', label: '2 000 - 3 000 FCFA' },
-                { value: '3 000 - 5 000 FCFA', label: '3 000 - 5 000 FCFA' },
-                { value: 'Plus de 5 000 FCFA', label: 'Plus de 5 000 FCFA' }
+                { value: 'Moins de 20 GHS', label: 'Moins de 20 GHS' },
+                { value: '20 - 40 GHS', label: '20 - 40 GHS' },
+                { value: '40 - 60 GHS', label: '40 - 60 GHS' },
+                { value: '60 - 80 GHS', label: '60 - 80 GHS' },
+                { value: 'Plus de 80 GHS', label: 'Plus de 80 GHS' }
               ]}
               value={formData.budgetJournalierRepas}
               onChange={handleQuestionChange}
@@ -528,14 +454,14 @@ const EnhancedSurveyForm = () => {
 
             <Question
               id="prixMaxRepas"
-              title="Quel serait le prix maximum que vous seriez prêt(e) à payer pour un repas préparé sain et de qualité ?"
+              title="Quel serait le prix maximum que vous seriez prêt(e) à payer pour un repas sain et de qualité (GHS) ?"
               type="multiple-choice"
               options={[
-                { value: 'Moins de 1 500 FCFA', label: 'Moins de 1 500 FCFA' },
-                { value: '1 500 - 2 500 FCFA', label: '1 500 - 2 500 FCFA' },
-                { value: '2 500 - 3 500 FCFA', label: '2 500 - 3 500 FCFA' },
-                { value: '3 500 - 5 000 FCFA', label: '3 500 - 5 000 FCFA' },
-                { value: 'Plus de 5 000 FCFA', label: 'Plus de 5 000 FCFA' }
+                { value: 'Moins de 35 GHS', label: 'Moins de 35 GHS' },
+                { value: '35 - 45 GHS', label: '35 - 45 GHS' },
+                { value: '45 - 55 GHS', label: '45 - 55 GHS' },
+                { value: '55 - 70 GHS', label: '55 - 70 GHS' },
+                { value: 'Plus de 70 GHS', label: 'Plus de 70 GHS' }
               ]}
               value={formData.prixMaxRepas}
               onChange={handleQuestionChange}
@@ -544,14 +470,13 @@ const EnhancedSurveyForm = () => {
 
             <Question
               id="budgetMensuelAbo"
-              title="Si un service d'abonnement pour des repas quotidiens était disponible, quel budget mensuel seriez-vous prêt(e) à y consacrer ?"
+              title="Si un abonnement mensuel (20 jours) était disponible, quel budget mensuel seriez-vous prêt(e) à y consacrer (GHS) ?"
               type="multiple-choice"
               options={[
-                { value: 'Moins de 15 000 FCFA', label: 'Moins de 15 000 FCFA' },
-                { value: '15 000 - 25 000 FCFA', label: '15 000 - 25 000 FCFA' },
-                { value: '25 000 - 35 000 FCFA', label: '25 000 - 35 000 FCFA' },
-                { value: '35 000 - 45 000 FCFA', label: '35 000 - 45 000 FCFA' },
-                { value: 'Plus de 45 000 FCFA', label: 'Plus de 45 000 FCFA' }
+                { value: '500 - 550 GHS', label: '500 - 550 GHS' },
+                { value: '550 - 600 GHS', label: '550 - 600 GHS' },
+                { value: '600 - 650 GHS', label: '600 - 650 GHS' },
+                { value: '650 - 700 GHS', label: '650 - 700 GHS' }
               ]}
               value={formData.budgetMensuelAbo}
               onChange={handleQuestionChange}
@@ -641,9 +566,9 @@ const EnhancedSurveyForm = () => {
   return (
     <div className="survey-form-container" ref={formRef}>
       <div className="survey-header">
-        <h1 className="text-4xl font-bold text-green-700 mb-3">Sondage sur les solutions de repas</h1>
+        <h1 className="text-4xl font-bold text-green-700 mb-3">Sondage Easy Meal - Ghana (Achimota)</h1>
         <p className="text-gray-600">
-          Bonjour ! Nous réalisons une étude sur les habitudes alimentaires afin de développer des solutions de repas pratiques et adaptées aux besoins de la population. Ce sondage vise à comprendre comment améliorer l'accès à des repas quotidiens qui soient à la fois commodes, abordables et variés. Vos réponses nous aideront à façonner un service qui répond véritablement à vos attentes, quel que soit votre lieu de résidence. Merci de votre précieuse contribution.
+          Bonjour ! Nous réalisons une étude auprès des étudiants à Achimota (Accra) afin d'améliorer l'accès à des repas quotidiens sains, pratiques et abordables. Vos réponses nous aideront à concevoir un service adapté à la réalité du Ghana (prix, temps, qualité, goûts). Merci pour votre contribution.
         </p>
         
         {/* Hero image for the form */}

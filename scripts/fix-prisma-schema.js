@@ -32,10 +32,7 @@ model Admin {
 model SurveyResponse {
   id                       Int      @id @default(autoincrement())
   createdAt                DateTime @default(now())
-  ville                    String
-  villeAutre               String?
-  situationProfessionnelle String
-  situationProfAutre       String?
+  whatsappNumber           String
   mangeExterieurFreq       String
   tempsPreparationRepas    String
   typesRepas               String
@@ -50,6 +47,7 @@ model SurveyResponse {
   prixMaxRepas             String
   budgetMensuelAbo         String
   commentaires             String?
+  acceptePolitique         Boolean  @default(false)
 }
 `;
 

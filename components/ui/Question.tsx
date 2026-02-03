@@ -11,7 +11,7 @@ interface Option {
 interface QuestionProps {
   id: string;
   title: string;
-  type: 'multiple-choice' | 'checkbox' | 'linear-scale' | 'paragraph' | 'text-with-other' | 'email';
+  type: 'multiple-choice' | 'checkbox' | 'linear-scale' | 'paragraph' | 'text-with-other' | 'email' | 'text';
   options?: Option[];
   scaleMin?: number;
   scaleMax?: number;
@@ -22,10 +22,28 @@ interface QuestionProps {
   otherValue?: string;
   showOtherInput?: boolean;
   required?: boolean;
+  placeholder?: string;
+  inputType?: string;
+  helperText?: string;
 }
 
 const Question: React.FC<QuestionProps> = ({
-  id, title, type, options = [], scaleMin = 1, scaleMax = 5, scaleMinLabel, scaleMaxLabel, value, onChange, otherValue, showOtherInput, required
+  id,
+  title,
+  type,
+  options = [],
+  scaleMin = 1,
+  scaleMax = 5,
+  scaleMinLabel,
+  scaleMaxLabel,
+  value,
+  onChange,
+  otherValue,
+  showOtherInput,
+  required,
+  placeholder,
+  inputType,
+  helperText
 }) => {
   const handleOtherInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(id, value, e.target.value); // Pass the main value along with the other value
@@ -161,6 +179,24 @@ const Question: React.FC<QuestionProps> = ({
           {!required && (
             <p className="text-sm text-gray-500 mt-1 italic">
               Ce champ est facultatif
+            </p>
+          )}
+        </div>
+      )}
+
+      {type === 'text' && (
+        <div>
+          <Input
+            type={inputType || 'text'}
+            name={id}
+            value={value || ''}
+            onChange={(e) => onChange(id, e.target.value)}
+            placeholder={placeholder}
+            required={required}
+          />
+          {helperText && (
+            <p className="text-sm text-gray-500 mt-1 italic">
+              {helperText}
             </p>
           )}
         </div>

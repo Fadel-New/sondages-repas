@@ -5,8 +5,8 @@ import EnhancedSurveyForm from '../components/ui/EnhancedSurveyForm';
 const HomePage = () => {
   return (
     <Layout 
-      title="Sondage - Solutions Repas au Bénin" 
-      description="Participez à notre sondage sur les habitudes alimentaires au Bénin pour contribuer au développement de solutions de repas pratiques, sains et abordables adaptées à vos besoins."
+      title="Sondage Easy Meal - Ghana (Achimota)" 
+      description="Participez au sondage Easy Meal destiné aux étudiants à Achimota (Accra) pour améliorer l'accès à des repas pratiques, sains et abordables."
       imageUrl="/images/repas-social.jpeg"
     >
       <EnhancedSurveyForm />

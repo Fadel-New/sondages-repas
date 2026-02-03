@@ -4,10 +4,7 @@
 export interface SurveyResponse {
   id: number;
   createdAt: string; // ISO date string
-  ville: string;
-  villeAutre: string | null;
-  situationProfessionnelle: string;
-  situationProfAutre: string | null;
+  whatsappNumber: string;
   mangeExterieurFreq: string;
   tempsPreparationRepas: string;
   typesRepas: string[]; // Array for frontend

@@ -40,10 +40,7 @@ db.exec(`
 CREATE TABLE "SurveyResponse" (
   "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "ville" TEXT NOT NULL,
-  "villeAutre" TEXT,
-  "situationProfessionnelle" TEXT NOT NULL,
-  "situationProfAutre" TEXT,
+  "whatsappNumber" TEXT NOT NULL,
   "mangeExterieurFreq" TEXT NOT NULL,
   "tempsPreparationRepas" TEXT NOT NULL,
   "typesRepas" TEXT NOT NULL,
@@ -57,7 +54,8 @@ CREATE TABLE "SurveyResponse" (
   "budgetJournalierRepas" TEXT NOT NULL,
   "prixMaxRepas" TEXT NOT NULL,
   "budgetMensuelAbo" TEXT NOT NULL,
-  "commentaires" TEXT
+  "commentaires" TEXT,
+  "acceptePolitique" INTEGER NOT NULL DEFAULT 0
 );
 `);
 

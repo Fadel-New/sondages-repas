@@ -11,10 +11,7 @@ import Link from 'next/link';
 interface SurveyResponse {
   id: number;
   createdAt: string;
-  ville: string;
-  villeAutre?: string;
-  situationProfessionnelle: string;
-  situationProfAutre?: string;
+  whatsappNumber: string;
   mangeExterieurFreq: string;
   tempsPreparationRepas: string;
   typesRepas: string[];
@@ -177,15 +174,11 @@ const ResponseDetail = ({ admin, responseId }: { admin: any, responseId: string 
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6">
               <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4 border-b pb-2">Informations personnelles</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4 border-b pb-2">Contact</h3>
                 <div className="space-y-3">
                   <div className="flex flex-col">
-                    <span className="text-xs sm:text-sm text-gray-500">Ville</span>
-                    <span className="text-sm sm:text-base text-gray-800">{response.ville} {response.villeAutre ? `(${response.villeAutre})` : ''}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs sm:text-sm text-gray-500">Situation professionnelle</span>
-                    <span className="text-sm sm:text-base text-gray-800">{response.situationProfessionnelle} {response.situationProfAutre ? `(${response.situationProfAutre})` : ''}</span>
+                    <span className="text-xs sm:text-sm text-gray-500">Numéro WhatsApp</span>
+                    <span className="text-sm sm:text-base text-gray-800">{response.whatsappNumber}</span>
                   </div>
                 </div>
               </div>
@@ -254,15 +247,15 @@ const ResponseDetail = ({ admin, responseId }: { admin: any, responseId: string 
                 <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4 border-b pb-2">Budget</h3>
                 <div className="space-y-3">
                   <div className="flex flex-col">
-                    <span className="text-xs sm:text-sm text-gray-500">Budget journalier</span>
+                    <span className="text-xs sm:text-sm text-gray-500">Budget journalier (GHS)</span>
                     <span className="text-sm sm:text-base text-gray-800">{response.budgetJournalierRepas}</span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-xs sm:text-sm text-gray-500">Prix maximum par repas</span>
+                    <span className="text-xs sm:text-sm text-gray-500">Prix maximum par repas (GHS)</span>
                     <span className="text-sm sm:text-base text-gray-800">{response.prixMaxRepas}</span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-xs sm:text-sm text-gray-500">Budget abonnement mensuel</span>
+                    <span className="text-xs sm:text-sm text-gray-500">Budget abonnement mensuel (GHS)</span>
                     <span className="text-sm sm:text-base text-gray-800">{response.budgetMensuelAbo}</span>
                   </div>
                 </div>

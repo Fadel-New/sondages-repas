@@ -10,13 +10,13 @@ const PolitiqueConfidentialite = () => {
         
         <div className="prose lg:prose-xl">
           <p className="text-lg mb-4">
-            Dernière mise à jour : 2 juin 2025
+            Dernière mise à jour : 28 janvier 2026
           </p>
 
           <h2 className="text-2xl font-semibold text-green-600 mt-6 mb-3">Introduction</h2>
           <p>
             Nous nous engageons à protéger votre vie privée. Cette politique de confidentialité explique comment nous collectons, 
-            utilisons et protégeons vos données personnelles lorsque vous participez à notre sondage sur les habitudes alimentaires.
+            utilisons et protégeons vos données personnelles lorsque vous participez à notre sondage Easy Meal destiné aux étudiants à Achimota (Accra, Ghana).
           </p>
 
           <h2 className="text-2xl font-semibold text-green-600 mt-6 mb-3">Informations que nous collectons</h2>
@@ -24,10 +24,7 @@ const PolitiqueConfidentialite = () => {
             Lorsque vous participez à notre sondage, nous collectons les informations suivantes:
           </p>
           <ul className="list-disc pl-6 my-4">
-            <li>Adresse e-mail (facultative)</li>
-            <li>Sexe</li>
-            <li>Ville de résidence</li>
-            <li>Situation professionnelle</li>
+            <li>Numéro WhatsApp</li>
             <li>Habitudes alimentaires</li>
             <li>Préférences concernant les solutions de repas</li>
             <li>Budget consacré aux repas</li>
@@ -42,7 +39,7 @@ const PolitiqueConfidentialite = () => {
             <li>Analyser les besoins en matière de solutions de repas</li>
             <li>Développer des offres adaptées aux attentes des consommateurs</li>
             <li>Établir des statistiques anonymes sur les habitudes alimentaires</li>
-            <li>Vous contacter si vous avez indiqué votre adresse e-mail et accepté d'être contacté</li>
+            <li>Vous contacter via WhatsApp si nécessaire dans le cadre de l'étude</li>
           </ul>
 
           <h2 className="text-2xl font-semibold text-green-600 mt-6 mb-3">Protection de vos données</h2>

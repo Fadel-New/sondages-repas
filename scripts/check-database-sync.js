@@ -65,10 +65,10 @@ async function checkDbSync() {
       if (directResponses.length > 0 && prismaResponses.length > 0) {
         console.log('\n3. Comparaison des données:');
         console.log('   SQLite Direct (premier enregistrement):');
-        console.log(`   ID: ${directResponses[0].id}, Ville: ${directResponses[0].ville}`);
+        console.log(`   ID: ${directResponses[0].id}, WhatsApp: ${directResponses[0].whatsappNumber}`);
         
         console.log('   Prisma (premier enregistrement):');
-        console.log(`   ID: ${prismaResponses[0].id}, Ville: ${prismaResponses[0].ville}`);
+        console.log(`   ID: ${prismaResponses[0].id}, WhatsApp: ${prismaResponses[0].whatsappNumber}`);
         
         if (directResponses[0].id === prismaResponses[0].id) {
           console.log('   ✓ Les IDs correspondent');

@@ -114,7 +114,7 @@ const AdminDashboardPage = () => {
   return (
     <>
       <Head>
-        <title>Admin Dashboard - Réponses du Sondage</title>
+        <title>Admin Dashboard - Easy Meal</title>
       </Head>
       <div className="min-h-screen bg-gray-100">
         <header className="bg-gray-800 text-white shadow-lg">
@@ -166,11 +166,11 @@ const AdminDashboardPage = () => {
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ID</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Date</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Ville</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Situation Pro.</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">WhatsApp</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Mange Ext.</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Intérêt Solution</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Budget Jour.</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Budget Jour. (GHS)</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Budget Mensuel (GHS)</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Action</th>
                     </tr>
                   </thead>
@@ -179,11 +179,11 @@ const AdminDashboardPage = () => {
                       <tr key={res.id} className="hover:bg-gray-50 transition-colors">
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{res.id}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{new Date(res.createdAt).toLocaleDateString('fr-FR')}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{res.ville}{res.villeAutre ? ` (${res.villeAutre})` : ''}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{res.situationProfessionnelle}{res.situationProfAutre ? ` (${res.situationProfAutre})` : ''}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{res.whatsappNumber}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{res.mangeExterieurFreq}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{res.interetSolutionRepas}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{res.budgetJournalierRepas}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{res.budgetMensuelAbo}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-right">
                           <Button 
                             variant="primary" 
@@ -209,12 +209,8 @@ const AdminDashboardPage = () => {
                     </div>
                     <div className="grid grid-cols-2 gap-1 mb-2">
                       <div>
-                        <span className="text-xs text-gray-500">Ville:</span>
-                        <p className="text-sm">{res.ville}{res.villeAutre ? ` (${res.villeAutre})` : ''}</p>
-                      </div>
-                      <div>
-                        <span className="text-xs text-gray-500">Situation:</span>
-                        <p className="text-sm truncate">{res.situationProfessionnelle}</p>
+                        <span className="text-xs text-gray-500">WhatsApp:</span>
+                        <p className="text-sm">{res.whatsappNumber}</p>
                       </div>
                       <div>
                         <span className="text-xs text-gray-500">Mange Ext:</span>
@@ -223,6 +219,10 @@ const AdminDashboardPage = () => {
                       <div>
                         <span className="text-xs text-gray-500">Intérêt:</span>
                         <p className="text-sm">{res.interetSolutionRepas}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-gray-500">Budget mensuel (GHS):</span>
+                        <p className="text-sm">{res.budgetMensuelAbo}</p>
                       </div>
                     </div>
                     <Button 

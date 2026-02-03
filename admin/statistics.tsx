@@ -16,7 +16,7 @@ import {
   LineElement,
   RadialLinearScale,
 } from 'chart.js';
-import { Bar, Pie, Doughnut } from 'react-chartjs-2';
+import { Bar, Doughnut } from 'react-chartjs-2';
 import Button from '../components/ui/Button';
 
 // Enregistrer les composants Chart.js
@@ -38,10 +38,7 @@ ChartJS.register(
 interface SurveyResponse {
   id: number;
   createdAt: string;
-  ville: string;
-  villeAutre?: string;
-  situationProfessionnelle: string;
-  situationProfAutre?: string;
+  whatsappNumber: string;
   mangeExterieurFreq: string;
   tempsPreparationRepas: string;
   typesRepas: string[];
@@ -125,69 +122,42 @@ const StatisticsPage = () => {
   };
 
   // Fonctions pour calculer les statistiques et préparer les données pour les graphiques
-  const processVillesData = () => {
-    const villesCount: Record<string, number> = {};
+  const processTempsPreparationData = () => {
+    const tempsCount: Record<string, number> = {};
     
     responses.forEach(resp => {
-      const ville = resp.villeAutre && resp.ville === 'Autre' ? 'Autre' : resp.ville;
-      villesCount[ville] = (villesCount[ville] || 0) + 1;
+      tempsCount[resp.tempsPreparationRepas] = (tempsCount[resp.tempsPreparationRepas] || 0) + 1;
     });
     
     return {
-      labels: Object.keys(villesCount),
+      labels: Object.keys(tempsCount),
       datasets: [
         {
-          label: 'Répartition par villes',
-          data: Object.values(villesCount),
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.6)',
-            'rgba(54, 162, 235, 0.6)',
-            'rgba(255, 206, 86, 0.6)',
-            'rgba(75, 192, 192, 0.6)',
-            'rgba(153, 102, 255, 0.6)',
-          ],
-          borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-          ],
+          label: 'Temps de préparation des repas',
+          data: Object.values(tempsCount),
+          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          borderColor: 'rgba(54, 162, 235, 1)',
           borderWidth: 1,
         },
       ],
     };
   };
 
-  const processSituationProData = () => {
-    const situationsCount: Record<string, number> = {};
+  const processBudgetMensuelData = () => {
+    const budgetCount: Record<string, number> = {};
     
     responses.forEach(resp => {
-      const situation = resp.situationProfAutre && resp.situationProfessionnelle === 'Autre' 
-        ? 'Autre' : resp.situationProfessionnelle;
-      situationsCount[situation] = (situationsCount[situation] || 0) + 1;
+      budgetCount[resp.budgetMensuelAbo] = (budgetCount[resp.budgetMensuelAbo] || 0) + 1;
     });
     
     return {
-      labels: Object.keys(situationsCount),
+      labels: Object.keys(budgetCount),
       datasets: [
         {
-          label: 'Répartition par situation professionnelle',
-          data: Object.values(situationsCount),
-          backgroundColor: [
-            'rgba(54, 162, 235, 0.6)',
-            'rgba(255, 206, 86, 0.6)',
-            'rgba(75, 192, 192, 0.6)',
-            'rgba(153, 102, 255, 0.6)',
-            'rgba(255, 99, 132, 0.6)',
-          ],
-          borderColor: [
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 99, 132, 1)',
-          ],
+          label: 'Budget mensuel abonnement (GHS)',
+          data: Object.values(budgetCount),
+          backgroundColor: 'rgba(255, 159, 64, 0.6)',
+          borderColor: 'rgba(255, 159, 64, 1)',
           borderWidth: 1,
         },
       ],
@@ -326,7 +296,7 @@ const StatisticsPage = () => {
       labels: Object.keys(budgetCount),
       datasets: [
         {
-          label: 'Budget journalier pour repas',
+          label: 'Budget journalier pour repas (GHS)',
           data: Object.values(budgetCount),
           backgroundColor: 'rgba(255, 206, 86, 0.6)',
           borderColor: 'rgba(255, 206, 86, 1)',
@@ -396,12 +366,12 @@ const StatisticsPage = () => {
   return (
     <>
       <Head>
-        <title>Statistiques - Admin Dashboard</title>
+        <title>Statistiques - Easy Meal</title>
       </Head>
       <div className="min-h-screen bg-gray-100">
         <header className="bg-gray-800 text-white shadow-lg">
           <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center">
-            <h1 className="text-2xl font-bold mb-4 sm:mb-0">Statistiques des Sondages</h1>
+            <h1 className="text-2xl font-bold mb-4 sm:mb-0">Statistiques Easy Meal</h1>
             <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0">
               {adminUser && <span className="mb-2 sm:mr-4 sm:mb-0 text-center">Connecté: {adminUser.username}</span>}
               <div className="flex flex-wrap justify-center gap-2">
@@ -424,21 +394,19 @@ const StatisticsPage = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
               <div className="bg-white shadow-xl rounded-lg p-4 sm:p-6">
-                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-gray-700">Répartition par ville</h3>
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-gray-700">Temps de préparation des repas</h3>
                 <div className="h-60 sm:h-72">
-                  <Pie data={processVillesData()} options={{
-                    ...pieOptions,
+                  <Bar data={processTempsPreparationData()} options={{
+                    ...options,
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                      ...pieOptions.plugins,
-                      legend: {
-                        ...pieOptions.plugins?.legend,
-                        position: 'bottom',
-                        labels: {
-                          boxWidth: 12,
+                    scales: {
+                      ...options.scales,
+                      x: {
+                        ...options.scales?.x,
+                        ticks: {
                           font: {
-                            size: window?.innerWidth < 640 ? 10 : 12
+                            size: window?.innerWidth < 640 ? 8 : 12
                           }
                         }
                       }
@@ -448,21 +416,19 @@ const StatisticsPage = () => {
               </div>
 
               <div className="bg-white shadow-xl rounded-lg p-4 sm:p-6">
-                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-gray-700">Situation professionnelle</h3>
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-gray-700">Budget mensuel d'abonnement (GHS)</h3>
                 <div className="h-60 sm:h-72">
-                  <Pie data={processSituationProData()} options={{
-                    ...pieOptions,
+                  <Bar data={processBudgetMensuelData()} options={{
+                    ...options,
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                      ...pieOptions.plugins,
-                      legend: {
-                        ...pieOptions.plugins?.legend,
-                        position: 'bottom',
-                        labels: {
-                          boxWidth: 12,
+                    scales: {
+                      ...options.scales,
+                      x: {
+                        ...options.scales?.x,
+                        ticks: {
                           font: {
-                            size: window?.innerWidth < 640 ? 10 : 12
+                            size: window?.innerWidth < 640 ? 8 : 12
                           }
                         }
                       }
@@ -571,7 +537,7 @@ const StatisticsPage = () => {
               </div>
 
               <div className="bg-white shadow-xl rounded-lg p-4 sm:p-6">
-                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-gray-700">Budget journalier</h3>
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-gray-700">Budget journalier (GHS)</h3>
                 <div className="h-60 sm:h-72">
                   <Bar data={processBudgetData()} options={{
                     ...options,
